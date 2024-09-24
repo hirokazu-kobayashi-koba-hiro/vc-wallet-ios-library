@@ -1,5 +1,5 @@
 import XCTest
-@testable import vc_wallet_ios_library
+@testable import VcWalletLibrary
 
 final class vc_wallet_ios_libraryTests: XCTestCase {
     func testExample() throws {
