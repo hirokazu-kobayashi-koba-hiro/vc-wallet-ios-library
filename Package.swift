@@ -29,7 +29,6 @@ let package = Package(
             name: "VcWalletLibraryTests",
             dependencies: [
                 "VcWalletLibrary",
-                .product(name: "JOSESwift", package: "JOSESwift")
             ]
         ),
     ]
