@@ -13,17 +13,17 @@ let package = Package(
             targets: ["VcWalletLibrary"]),
     ],
     dependencies: [
-            // Reference to your internal library
-            .package(url: "https://github.com/airsidemobile/JOSESwift.git", from: "3.0.0")
-        ],
+        // Reference to your internal library
+        .package(url: "https://github.com/airsidemobile/JOSESwift.git", from: "3.0.0")
+    ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
         // Targets can depend on other targets in this package and products from dependencies.
         .target(
             name: "VcWalletLibrary",
             dependencies: [
-                    .product(name: "JOSESwift", package: "JOSESwift")
-                ]
+                .product(name: "JOSESwift", package: "JOSESwift")
+            ]
         ),
         .testTarget(
             name: "VcWalletLibraryTests",
