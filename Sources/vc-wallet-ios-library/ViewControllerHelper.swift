@@ -5,7 +5,6 @@ public class ViewControllerHelper {
     public static func topViewController() -> UIViewController? {
         
         guard let windowScene = UIApplication.shared.connectedScenes
-            .filter({ $0.activationState == .foregroundActive })
             .first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene,
               let keyWindow = windowScene.windows.first(where: { $0.isKeyWindow }) else {
             return nil
