@@ -20,7 +20,7 @@ public class ViewControllerHelper {
         }
         
         if let navigationController = viewController as? UINavigationController {
-            return getTopViewController(from: navigationController)
+            return getTopViewController(from: navigationController.visibleViewController)
         }
         
         if let tabBarController = viewController as? UITabBarController,
