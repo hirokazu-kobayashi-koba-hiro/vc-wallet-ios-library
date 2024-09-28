@@ -1,10 +1,10 @@
 import UIKit
 
-public class ViewControllerHelper {
+extension UIApplication {
     
-    public static func topViewController() -> UIViewController? {
+    public func topViewController() -> UIViewController? {
         
-        guard let windowScene = UIApplication.shared.connectedScenes
+        guard let windowScene = self.connectedScenes
             .first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene,
               let keyWindow = windowScene.windows.first(where: { $0.isKeyWindow }) else {
             return nil
@@ -13,7 +13,7 @@ public class ViewControllerHelper {
         return getTopViewController(from: keyWindow.rootViewController)
     }
     
-    private static func getTopViewController(from viewController: UIViewController?) -> UIViewController? {
+    private func getTopViewController(from viewController: UIViewController?) -> UIViewController? {
         
         if let presentedViewController = viewController?.presentedViewController {
             return getTopViewController(from: presentedViewController)
