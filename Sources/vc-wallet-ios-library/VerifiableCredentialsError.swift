@@ -9,6 +9,8 @@ import Foundation
 
 
 public enum VerifiableCredentialsError: Error {
+    case invalidCredentialOfferRequest(_ description: String? = nill)
+    case invalidCredentialOffer(_ description: String? = nill)
     case networkError
     case unknownError
     
