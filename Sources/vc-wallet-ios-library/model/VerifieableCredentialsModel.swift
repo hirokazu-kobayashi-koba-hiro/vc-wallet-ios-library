@@ -136,7 +136,7 @@ public class CredentialOfferCreator {
         
         
         let preAuthorizedCodeGrant = toPreAuthorizedGrant(grants)
-        let authorizedCodeGrant = toPreAuthorizedGrant(grants)
+        let authorizedCodeGrant = toAuthorizationCodeGrant(grants)
         
         return CredentialOffer(credentialIssuer: credentialIssuer, credentialConfigurationIds: credentialConfigurationIds,
                                preAuthorizedCodeGrant: preAuthorizedCodeGrant, authorizedCodeGrant: authorizedCodeGrant)
