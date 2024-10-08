@@ -7,26 +7,31 @@
 
 import Foundation
 
-
 public class VerifiableCredentialsApi {
-    
-    public static let shared = VerifiableCredentialsApi()
-    private let service = VerifiableCredentialsService()
-    
-    public func handlePreAuthorization(subject: String, url: String) async throws {
-        
-        let credentialOfferRequest = CredentialOfferRequest(url: url)
-        let credentialOfferRequestValidator = CredentialOfferRequestValidator(credentialOfferRequest: credentialOfferRequest)
-        try credentialOfferRequestValidator.validate()
-        
-        let credentialOffer = try await service.getCredentialOffer(credentialOfferRequest: credentialOfferRequest)
-        guard let preAuthorizedCodeGrant = credentialOffer.preAuthorizedCodeGrant else {
-            throw VerifiableCredentialsError.invalidCredentialOffer("PreAuthorizedCode in credential offer response is empty. It is required on pre-authorization-code flow")
-        }
-        
-        let credentialIssuerMetadata = try await service.getCredentialIssuerMetadata(url: credentialOffer.credentialIssuerMetadataEndpoint())
-        let oidcMetadata =
-        try await service.getOidcMetadata(url: credentialIssuerMetadata.getOpenIdConfigurationEndpoint())
-        
+
+  public static let shared = VerifiableCredentialsApi()
+  private let service = VerifiableCredentialsService()
+
+  public func handlePreAuthorization(subject: String, url: String) async throws {
+
+    let credentialOfferRequest = CredentialOfferRequest(url: url)
+    let credentialOfferRequestValidator = CredentialOfferRequestValidator(
+      credentialOfferRequest: credentialOfferRequest)
+    try credentialOfferRequestValidator.validate()
+
+    let credentialOffer = try await service.getCredentialOffer(
+      credentialOfferRequest: credentialOfferRequest)
+    guard let preAuthorizedCodeGrant = credentialOffer.preAuthorizedCodeGrant else {
+      throw VerifiableCredentialsError.invalidCredentialOffer(
+        "PreAuthorizedCode in credential offer response is empty. It is required on pre-authorization-code flow"
+      )
     }
+
+    let credentialIssuerMetadata = try await service.getCredentialIssuerMetadata(
+      url: credentialOffer.credentialIssuerMetadataEndpoint())
+    let oidcMetadata =
+      try await service.getOidcMetadata(
+        url: credentialIssuerMetadata.getOpenIdConfigurationEndpoint())
+
+  }
 }

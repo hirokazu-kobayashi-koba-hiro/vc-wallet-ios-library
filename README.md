@@ -72,3 +72,12 @@ dependencies: [
 ## quick start
 
 TODO
+
+
+## implementation
+
+### format
+
+```shell
+./scripts/format.sh Sources
+```
