@@ -35,4 +35,9 @@ public class VerifiableCredentialsService {
         
         return try await httpClient.get(url: url, responseType: CredentialIssuerMetadata.self)
     }
+    
+    public func getOidcMetadata(urlL String) async throws -> OidcMetadata {
+        
+        return try await httpClient.get(url: urlL, responseType: OidcMetadata.self)
+    }
 }

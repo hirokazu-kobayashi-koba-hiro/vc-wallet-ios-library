@@ -281,3 +281,76 @@ public struct ProofTypesSupported: Codable {
     let proofSigningAlgValuesSupported: [String]
 }
 
+public struct OidcMetadata: Codable {
+    // OIDD
+    let issuer: String
+    let authorizationEndpoint: String
+    let tokenEndpoint: String
+    let userinfoEndpoint: String
+    let jwksUri: String
+    let registrationEndpoint: String?
+    let scopesSupported: [String]?
+    let responseTypesSupported: [String]
+    let responseModesSupported: [String]?
+    let grantTypesSupported: [String]?
+    let acrValuesSupported: [String]?
+    let subjectTypesSupported: [String]
+    let idTokenSigningAlgValuesSupported: [String]
+    let idTokenEncryptionAlgValuesSupported: [String]?
+    let idTokenEncryptionEncValuesSupported: [String]?
+    let userinfoSigningAlgValuesSupported: [String]?
+    let userinfoEncryptionAlgValuesSupported: [String]?
+    let userinfoEncryptionEncValuesSupported: [String]?
+    let requestObjectSigningAlgValuesSupported: [String]?
+    let requestObjectEncryptionAlgValuesSupported: [String]?
+    let requestObjectEncryptionEncValuesSupported: [String]?
+    let tokenEndpointAuthMethodsSupported: [String]?
+    let tokenEndpointAuthSigningAlgValuesSupported: [String]?
+    let displayValuesSupported: [String]?
+    let claimTypesSupported: [String]?
+    let claimsSupported: [String]?
+    let serviceDocumentation: String?
+    let claimsLocalesSupported: Bool?
+    let claimsParameterSupported: Bool?
+    let requestParameterSupported: Bool?
+    let requestUriParameterSupported: Bool?
+    let requireRequestUriRegistration: Bool?
+    let opPolicyUri: String?
+    let opTosUri: String?
+
+    // OAuth2.0 extension
+    let revocationEndpoint: String?
+    let revocationEndpointAuthMethodsSupported: [String]?
+    let revocationEndpointAuthSigningAlgValuesSupported: [String]?
+    let introspectionEndpoint: String?
+    let introspectionEndpointAuthMethodsSupported: [String]?
+    let introspectionEndpointAuthSigningAlgValuesSupported: [String]?
+    let codeChallengeMethodsSupported: [String]?
+    let tlsClientCertificateBoundAccessTokens: Bool?
+    let requireSignedRequestObject: Bool?
+    let authorizationResponseIssParameterSupported: Bool?
+
+    // CIBA
+    let backchannelTokenDeliveryModesSupported: [String]?
+    let backchannelAuthenticationEndpoint: String?
+    let backchannelAuthenticationRequestSigningAlgValuesSupported: [String]?
+    let backchannelUserCodeParameterSupported: Bool?
+    let authorizationDetailsTypesSupported: [String]?
+
+    // JARM
+    let authorizationSigningAlgValuesSupported: [String]?
+    let authorizationEncryptionAlgValuesSupported: [String]?
+    let authorizationEncryptionEncValuesSupported: [String]?
+
+    // PAR
+    let pushedAuthorizationRequestEndpoint: String?
+
+    // Dpop
+    let dpopSigningAlgValuesSupported: [String]?
+
+    func scopesSupportedForVcAsString() -> String {
+        return scopesSupported?
+            .filter { $0 != "openid" && $0 != "offline_access" }
+            .joined(separator: " ") ?? ""
+    }
+}

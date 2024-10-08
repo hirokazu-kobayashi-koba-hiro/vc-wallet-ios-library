@@ -25,8 +25,8 @@ public class VerifiableCredentialsApi {
         }
         
         let credentialIssuerMeta = await service.getCredentialIssuerMetadata(url: credentialOffer.credentialIssuerMetadataEndpoint())
-        
-        
+        let oidcMetadata =
+        service.getOidcMetadata(url: credentialIssuerMetadata.getOpenIdConfigurationEndpoint())
         
     }
 }
