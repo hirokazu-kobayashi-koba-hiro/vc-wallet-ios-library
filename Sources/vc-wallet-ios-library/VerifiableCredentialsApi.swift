@@ -17,16 +17,16 @@ public class VerifiableCredentialsApi {
         
         let credentialOfferRequest = CredentialOfferRequest(url: url)
         let credentialOfferRequestValidator = CredentialOfferRequestValidator(credentialOfferRequest: credentialOfferRequest)
-        credentialOfferRequestValidator.validate()
+        try credentialOfferRequestValidator.validate()
         
         let credentialOffer = try await service.getCredentialOffer(credentialOfferRequest: credentialOfferRequest)
         guard let preAuthorizedCodeGrant = credentialOffer.preAuthorizedCodeGrant else {
             throw VerifiableCredentialsError.invalidCredentialOffer("PreAuthorizedCode in credential offer response is empty. It is required on pre-authorization-code flow")
         }
         
-        let credentialIssuerMeta = await service.getCredentialIssuerMetadata(url: credentialOffer.credentialIssuerMetadataEndpoint())
+        let credentialIssuerMetadata = try await service.getCredentialIssuerMetadata(url: credentialOffer.credentialIssuerMetadataEndpoint())
         let oidcMetadata =
-        service.getOidcMetadata(url: credentialIssuerMetadata.getOpenIdConfigurationEndpoint())
+        try await service.getOidcMetadata(url: credentialIssuerMetadata.getOpenIdConfigurationEndpoint())
         
     }
 }

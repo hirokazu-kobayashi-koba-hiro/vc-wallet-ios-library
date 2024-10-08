@@ -28,7 +28,7 @@ public struct CredentialOfferRequest {
 }
 
 public class CredentialOfferRequestValidator {
-    let scheme: String
+    let scheme: String?
     let params: [String: String]
     
     public init(credentialOfferRequest: CredentialOfferRequest) {
@@ -37,34 +37,34 @@ public class CredentialOfferRequestValidator {
     }
     
     public func validate() throws {
-        throwExceptionIfNotValidScheme()
-        throwExceptionIfRequiredParams()
-        throwExceptionIfDuplicatedParams()
+        try throwExceptionIfNotValidScheme()
+        try throwExceptionIfRequiredParams()
+        try throwExceptionIfDuplicatedParams()
     }
     
-    func throwExceptionIfNotValidScheme() {
+    func throwExceptionIfNotValidScheme() throws {
         
-        guard let scheme == scheme else {
-            throw VerifieableCredentialsError.invalidCredentialOfferRequest("Scheme is required.")
+        guard let schemeValue = scheme else {
+            throw VerifiableCredentialsError.invalidCredentialOfferRequest("Scheme is required.")
         }
         
-        guard let scheme == "openid-credential-offer" else  {
-            throw VerifieableCredentialsError.invalidCredentialOfferRequest("Scheme must be 'openid-credential-offer://'.")
+        if (schemeValue != "openid-credential-offer") {
+            throw VerifiableCredentialsError.invalidCredentialOfferRequest("Scheme must be 'openid-credential-offer://'.")
         }
     }
     
-    func throwExceptionIfRequiredParams() {
+    func throwExceptionIfRequiredParams() throws {
         
-        guard let credentialOffer = params["credential_offer"], let credentialOfferUri = params["credential_offer_uri"] else {
-            throw VerifieableCredentialsError.invalidCredentialOfferRequest(
+         if (params["credential_offer"] == nil && params["credential_offer_uri"] == nil) {
+            throw VerifiableCredentialsError.invalidCredentialOfferRequest(
                 "Credential offer request must contain either credential_offer or credential_offer_uri.")
         }
     }
     
-    func throwExceptionIfDuplicatedParams() {
+    func throwExceptionIfDuplicatedParams() throws {
         
         if let credentialOffer = params["credential_offer"], let credentialOfferUri = params["credential_offer_uri"] {
-            throw VerifieableCredentialsError.invalidCredentialOfferRequest(
+            throw VerifiableCredentialsError.invalidCredentialOfferRequest(
                 "Credential offer request must not contain both credential_offer and credential_offer_uri.")
         }
     }
@@ -102,7 +102,7 @@ public struct PreAuthorizedCodeGrant {
     let inputMode: String?
     let description: String?
     
-    public init(preAuthorizedCode: String, length: Int? = null, inputMode: String? = null, description: String? = null) {
+    public init(preAuthorizedCode: String, length: Int? = nil, inputMode: String? = nil, description: String? = nil) {
         self.preAuthorizedCode = preAuthorizedCode
         self.length = length
         self.inputMode = inputMode
@@ -127,7 +127,7 @@ public class CredentialOfferCreator {
               let credentialConfigurationIds = map["credential_configuration_ids"] as? [String] else {
             
             Logger.shared.debug("credential offer request does not contain credential_issuer or credential_configuration_ids")
-            throw VerifiableCredentialsError.invalidCredentialOfferRequest
+            throw VerifiableCredentialsError.invalidCredentialOfferRequest()
         }
         
         guard let grants = map["grants"] as? [String: Any] else {
@@ -208,11 +208,11 @@ public struct CredentialIssuerMetadata: Codable {
     
     // Get Verifiable Credentials Type
     func getVerifiableCredentialsType(credentialConfigurationId: String) throws -> VerifiableCredentialsType {
+        
         guard let format = credentialConfigurationsSupported[credentialConfigurationId]?.format else {
-            throw VerifiableCredentialsException(error: .invalidVcIssuerMetadata,
-                                                 message: "not found credential configuration (\(credentialConfigurationId))")
+            throw VerifiableCredentialsError.invalidCredentialIssuerMetadata("not found credential configuration (\(credentialConfigurationId))")
         }
-        return VerifiableCredentialsType.of(format: format)
+        return try VerifiableCredentialsType.of(format: format)
     }
     
     // Find VCT (Verifiable Credential Type)
@@ -223,10 +223,36 @@ public struct CredentialIssuerMetadata: Codable {
     // Get Scope
     func getScope(credentialConfigurationId: String) throws -> String {
         guard let scope = credentialConfigurationsSupported[credentialConfigurationId]?.scope else {
-            throw VerifiableCredentialsException(error: .invalidVcIssuerMetadata,
-                                                 message: "not found scope configuration, (\(credentialConfigurationId))")
+            throw VerifiableCredentialsError.invalidCredentialIssuerMetadata("not found scope configuration, (\(credentialConfigurationId))")
         }
         return scope
+    }
+}
+
+enum VerifiableCredentialsType: String {
+    case msoMdoc = "mso_mdoc"
+    case sdJwt = "vc+sd-jwt"
+    case jwtVcJson = "jwt_vc_json"
+    case didJwtVc = "did_jwt_vc"
+    case jwtVcJsonLd = "jwt_vc_json-ld"
+    case ldpVc = "ldp_vc"
+
+    var doctype: String {
+        switch self {
+        case .msoMdoc:
+            return "org.iso.18013.5.1.mDL"
+        case .sdJwt, .jwtVcJson, .didJwtVc, .jwtVcJsonLd, .ldpVc:
+            return ""
+        }
+    }
+
+    static func of(format: String) throws -> VerifiableCredentialsType {
+        
+        guard let type = VerifiableCredentialsType(rawValue: format) else {
+            throw VerifiableCredentialsError.unsupportedCredentialFormat("Not found format (\(format))"
+            )
+        }
+        return type
     }
 }
 

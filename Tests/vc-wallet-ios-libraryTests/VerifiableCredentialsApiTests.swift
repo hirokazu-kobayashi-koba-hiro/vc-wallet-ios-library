@@ -24,7 +24,7 @@ final class VerifiableCredentialsApiTests: XCTestCase {
         // Any test you write for XCTest can be annotated as throws and async.
         // Mark your test throws to produce an unexpected failure when your test encounters an uncaught error.
         // Mark your test async to allow awaiting for asynchronous code to complete. Check the results with assertions afterwards.
-        try await VerifiableCredentialsApi.shared.handlePreAuthorization(subject: "test", url: "")
+        try await VerifiableCredentialsApi.shared.handlePreAuthorization(subject: "test", url: "openid-credential-offer://?credential_offer_uri=https://trial.authlete.net/api/offer/WaTHQdy-YUK0yLS7DSdwwhoYlfRkB2S4Z_t7lOI-JEA")
     }
 
     func testPerformanceExample() throws {

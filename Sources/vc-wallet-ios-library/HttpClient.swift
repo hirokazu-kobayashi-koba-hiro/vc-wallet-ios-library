@@ -113,7 +113,6 @@ public class HttpClient {
             throw URLError(.cannotParseResponse)
         }
         return dictionary
-        
     }
     
     private func handleResponse<T: Decodable>(response: URLResponse, data: Data, responseType: T.Type) throws -> T {

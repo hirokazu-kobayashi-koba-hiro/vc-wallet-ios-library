@@ -18,17 +18,18 @@ public class VerifiableCredentialsService {
         if let credentialOfferUri = credentialOfferRequest.credentialOfferUri() {
             let response = try await httpClient.get(url: credentialOfferUri)
             let creator = CredentialOfferCreator(response)
-            return creator.create()
+            return try creator.create()
         }
         
         if let credentialOffer = credentialOfferRequest.credentialOffer() {
-            let response = try JSONSerialization.data(withJSONObject: credentialOffer, options: [String: Any])
-            let creator = CredentialOffer(response)
-            return creator.create()
+            let data = credentialOffer.data(using: .utf8)!
+            let response = try parse(data)
+            let creator = CredentialOfferCreator(response)
+            return try creator.create()
         }
         
         Logger.shared.error("neither contain credentialOfferUri or credentialOffer")
-        throw VerifiableCredentialsError.invalidCredentialOfferRequest
+        throw VerifiableCredentialsError.invalidCredentialOffer("neither contain credentialOfferUri or credentialOffer")
     }
     
     public func  getCredentialIssuerMetadata(url: String) async throws -> CredentialIssuerMetadata {
@@ -36,8 +37,8 @@ public class VerifiableCredentialsService {
         return try await httpClient.get(url: url, responseType: CredentialIssuerMetadata.self)
     }
     
-    public func getOidcMetadata(urlL String) async throws -> OidcMetadata {
+    public func getOidcMetadata(url: String) async throws -> OidcMetadata {
         
-        return try await httpClient.get(url: urlL, responseType: OidcMetadata.self)
+        return try await httpClient.get(url: url, responseType: OidcMetadata.self)
     }
 }
