@@ -79,5 +79,5 @@ TODO
 ### format
 
 ```shell
-./scripts/format.sh Sources
+./scripts/format.sh
 ```
