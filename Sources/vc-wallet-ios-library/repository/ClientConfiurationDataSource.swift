@@ -16,7 +16,7 @@ public class ClientConfiurationDataSource: WalletClientConfigurationRepository {
       throw VerifiableCredentialsError.invalidClientConfiguration(
         "client configuration is invalid. client configuration can not be parsed to json")
     }
-    
+
     UserDefaults.standard.set(value, forKey: issuer)
   }
 

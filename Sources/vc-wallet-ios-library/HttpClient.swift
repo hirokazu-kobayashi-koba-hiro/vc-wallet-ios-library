@@ -47,8 +47,8 @@ public class HttpClient {
     headers?.forEach { header in
       request.setValue(header.value, forHTTPHeaderField: header.key)
     }
-      
-      Logger.shared.debug("request: \(request)")
+
+    Logger.shared.debug("request: \(request)")
 
     let (data, response) = try await urlSession.data(for: request)
 
@@ -70,8 +70,8 @@ public class HttpClient {
     headers?.forEach { header in
       request.setValue(header.value, forHTTPHeaderField: header.key)
     }
-      
-      Logger.shared.debug("request: \(request)")
+
+    Logger.shared.debug("request: \(request)")
 
     if let body = body {
       let jsonData = try JSONSerialization.data(withJSONObject: body, options: [])
