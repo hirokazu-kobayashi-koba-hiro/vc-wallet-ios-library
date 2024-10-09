@@ -23,8 +23,11 @@ public class VerifiableCredentialsService {
 
     if let credentialOffer = credentialOfferRequest.credentialOffer() {
       let data = credentialOffer.data(using: .utf8)!
-      let response = try readFromJson(data)
-      let creator = CredentialOfferCreator(response)
+      let decodedData = readFromJson(data)
+        guard let json = decodedData else {
+            throw VerifiableCredentialsError.invalidCredentialOffer("CredentialOffer is invalid json format")
+        }
+        let creator = CredentialOfferCreator(json)
       return try creator.create()
     }
 

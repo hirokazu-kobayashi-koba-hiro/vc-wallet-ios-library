@@ -27,7 +27,7 @@ final class VerifiableCredentialsApiTests: XCTestCase {
     try await VerifiableCredentialsApi.shared.handlePreAuthorization(
       subject: "test",
       url:
-        "openid-credential-offer://?credential_offer_uri=https://trial.authlete.net/api/offer/WaTHQdy-YUK0yLS7DSdwwhoYlfRkB2S4Z_t7lOI-JEA"
+        "openid-credential-offer://?credential_offer_uri=https://trial.authlete.net/api/offer/MUzi6yE2swpabfvFLoG89y3GeCtawmUvvoGigQ-pf_o"
     )
   }
 

@@ -25,6 +25,7 @@ public class HttpClient {
     headers?.forEach { header in
       request.setValue(header.value, forHTTPHeaderField: header.key)
     }
+    Logger.shared.debug("request: \(request)")
 
     let (data, response) = try await urlSession.data(for: request)
 
@@ -46,6 +47,8 @@ public class HttpClient {
     headers?.forEach { header in
       request.setValue(header.value, forHTTPHeaderField: header.key)
     }
+      
+      Logger.shared.debug("request: \(request)")
 
     let (data, response) = try await urlSession.data(for: request)
 
@@ -67,6 +70,8 @@ public class HttpClient {
     headers?.forEach { header in
       request.setValue(header.value, forHTTPHeaderField: header.key)
     }
+      
+      Logger.shared.debug("request: \(request)")
 
     if let body = body {
       let jsonData = try JSONSerialization.data(withJSONObject: body, options: [])
@@ -125,7 +130,7 @@ public class HttpClient {
       throw URLError(.badServerResponse)
     }
     let statusCode = httpResponse.statusCode
-    print("HTTP response with status code: \(statusCode)")
+    Logger.shared.debug("HTTP response with status code: \(statusCode)")
 
     let decoder = JSONDecoder()
     if enableSnakeCase {
