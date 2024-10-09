@@ -13,7 +13,9 @@ public enum VerifiableCredentialsError: Error {
   case invalidCredentialIssuerMetadata(_ description: String? = nil)
   case invalidClientConfiguration(_ description: String? = nil)
   case unsupportedCredentialFormat(_ description: String? = nil)
+  case vcIssuerUnsupportedDynamicClientRegistration(_ description: String? = nil)
   case networkError
+  case systemError(_ description: String? = nil)
   case unknownError
 
 }

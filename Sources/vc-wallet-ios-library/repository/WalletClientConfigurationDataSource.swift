@@ -1,5 +1,5 @@
 //
-//  ClientConfiurationDataSource.swift
+//  WalletClientConfigurationDataSource.swift
 //  VcWalletLibrary
 //
 //  Created by 小林弘和 on 2024/10/09.
@@ -7,7 +7,9 @@
 
 import Foundation
 
-public class ClientConfiurationDataSource: WalletClientConfigurationRepository {
+public class WalletClientConfigurationDataSource: WalletClientConfigurationRepository {
+
+  public init() {}
 
   public func register(issuer: String, configuration: ClientConfiguration) throws {
 
