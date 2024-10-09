@@ -399,3 +399,49 @@ public struct OidcMetadata: Codable {
       .joined(separator: " ") ?? ""
   }
 }
+
+public struct ClientConfiguration: Codable {
+  let clientId: String
+  let clientSecret: String?
+  let redirectUris: [String]?
+  let tokenEndpointAuthMethod: String?
+  let grantTypes: [String]?
+  let responseTypes: [String]?
+  let clientName: String?
+  let clientUri: String?
+  let logoUri: String?
+  let scope: String?
+  let contacts: String?
+  let tosUri: String?
+  let policyUri: String?
+  let jwksUri: String?
+  let jwks: String?
+  let softwareId: String?
+  let softwareVersion: String?
+  let requestUris: [String]?
+  let backchannelTokenDeliveryMode: String?
+  let backchannelClientNotificationEndpoint: String?
+  let backchannelAuthenticationRequestSigningAlg: String?
+  let backchannelUserCodeParameter: Bool?
+  let applicationType: String?
+  let idTokenEncryptedResponseAlg: String?
+  let idTokenEncryptedResponseEnc: String?
+  let authorizationDetailsTypes: [String]?
+  let tlsClientAuthSubjectDn: String?
+  let tlsClientAuthSanDns: String?
+  let tlsClientAuthSanUri: String?
+  let tlsClientAuthSanIp: String?
+  let tlsClientAuthSanEmail: String?
+  let tlsClientCertificateBoundAccessTokens: Bool?
+  let authorizationSignedResponseAlg: String?
+  let authorizationEncryptedResponseAlg: String?
+  let authorizationEncryptedResponseEnc: String?
+  let supportedJar: Bool?
+  let issuer: String?
+
+  func scopes() -> [String] {
+
+    guard let scope else { return [] }
+    return scope.split(separator: " ").map { String($0) }
+  }
+}

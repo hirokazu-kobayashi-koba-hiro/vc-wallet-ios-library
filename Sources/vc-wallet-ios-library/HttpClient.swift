@@ -86,7 +86,10 @@ public class HttpClient {
     }
     let statusCode = httpResponse.statusCode
     print("HTTP response with status code: \(statusCode)")
-    let response = try parse(data)
+    let responseJson = readFromJson(data)
+    guard let response = responseJson else {
+      throw URLError(.cannotParseResponse)
+    }
     switch statusCode {
     case 200...299:
       return response

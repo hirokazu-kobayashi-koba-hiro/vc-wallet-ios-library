@@ -23,7 +23,7 @@ public class VerifiableCredentialsService {
 
     if let credentialOffer = credentialOfferRequest.credentialOffer() {
       let data = credentialOffer.data(using: .utf8)!
-      let response = try parse(data)
+      let response = try readFromJson(data)
       let creator = CredentialOfferCreator(response)
       return try creator.create()
     }
