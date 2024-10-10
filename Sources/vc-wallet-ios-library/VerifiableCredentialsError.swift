@@ -21,11 +21,11 @@ public enum VerifiableCredentialsError: Error {
 }
 
 public enum HttpError: Error {
-  case networkError(statusCode: Int, response: [String: Any]?)
-  case clientError(statusCode: Int, response: [String: Any]?)
-  case tooManyRequestsError(statusCode: Int = 429, response: [String: Any]?)
-  case serverError(statusCode: Int, response: [String: Any]?)
-  case serverMentenanceError(statusCode: Int = 503, response: [String: Any]?)
+  case networkError(statusCode: Int, response: Data? = nil)
+  case clientError(statusCode: Int, response: Data? = nil)
+  case tooManyRequestsError(statusCode: Int = 429, response: Data? = nil)
+  case serverError(statusCode: Int, response: Data? = nil)
+  case serverMentenanceError(statusCode: Int = 503, response: Data? = nil)
 
 }
 

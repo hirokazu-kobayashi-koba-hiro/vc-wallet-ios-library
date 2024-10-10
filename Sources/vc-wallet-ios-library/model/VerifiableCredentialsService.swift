@@ -71,6 +71,7 @@ public class VerifiableCredentialsService {
 
   func registerClientConfiguration(oidcMetadata: OidcMetadata) async -> ClientConfiguration {
     do {
+      //FIXME dynamic setting
       let redirectUris = [
         "org.idp.verifiable.credentials://dev-l6ns7qgdx81yv2rs.us.auth0.com/android/org.idp.wallet.app/callback"
       ]

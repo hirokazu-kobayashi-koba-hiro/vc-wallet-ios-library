@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class Logger {
+public final class Logger: Sendable {
 
   public static let shared = Logger()
 

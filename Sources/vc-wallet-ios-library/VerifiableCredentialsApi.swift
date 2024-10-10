@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class VerifiableCredentialsApi {
+public final class VerifiableCredentialsApi: @unchecked Sendable {
 
   public static let shared = VerifiableCredentialsApi()
   private var verifiableCredentialsService: VerifiableCredentialsService?

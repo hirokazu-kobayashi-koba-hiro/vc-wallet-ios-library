@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class HttpClient {
+public final class HttpClient: Sendable {
 
   let urlSession: URLSession
 
@@ -99,15 +99,15 @@ public class HttpClient {
     case 200...299:
       return response
     case 429:
-      throw HttpError.tooManyRequestsError(statusCode: statusCode, response: response)
+      throw HttpError.tooManyRequestsError(statusCode: statusCode, response: data)
     case 400...499:
-      throw HttpError.clientError(statusCode: statusCode, response: response)
+      throw HttpError.clientError(statusCode: statusCode, response: data)
     case 503:
-      throw HttpError.serverMentenanceError(statusCode: statusCode, response: response)
+      throw HttpError.serverMentenanceError(statusCode: statusCode, response: data)
     case 500...599:
-      throw HttpError.serverError(statusCode: statusCode, response: response)
+      throw HttpError.serverError(statusCode: statusCode, response: data)
     default:
-      throw HttpError.networkError(statusCode: statusCode, response: response)
+      throw HttpError.networkError(statusCode: statusCode, response: data)
     }
   }
 
@@ -142,15 +142,15 @@ public class HttpClient {
     case 200...299:
       return decodedResponse
     case 429:
-      throw HttpError.tooManyRequestsError(statusCode: statusCode, response: [:])
+      throw HttpError.tooManyRequestsError(statusCode: statusCode, response: data)
     case 400...499:
-      throw HttpError.clientError(statusCode: statusCode, response: [:])
+      throw HttpError.clientError(statusCode: statusCode, response: data)
     case 503:
-      throw HttpError.serverMentenanceError(statusCode: statusCode, response: [:])
+      throw HttpError.serverMentenanceError(statusCode: statusCode, response: data)
     case 500...599:
-      throw HttpError.serverError(statusCode: statusCode, response: [:])
+      throw HttpError.serverError(statusCode: statusCode, response: data)
     default:
-      throw HttpError.networkError(statusCode: statusCode, response: [:])
+      throw HttpError.networkError(statusCode: statusCode, response: data)
     }
   }
 }

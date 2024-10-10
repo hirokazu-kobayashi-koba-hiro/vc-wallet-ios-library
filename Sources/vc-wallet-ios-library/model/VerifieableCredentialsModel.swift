@@ -72,7 +72,7 @@ public class CredentialOfferRequestValidator {
   }
 }
 
-public struct CredentialOffer {
+public struct CredentialOffer: Sendable {
   let credentialIssuer: String
   let credentialConfigurationIds: [String]
   let preAuthorizedCodeGrant: PreAuthorizedCodeGrant?
@@ -102,7 +102,7 @@ public struct CredentialOffer {
   }
 }
 
-public struct PreAuthorizedCodeGrant {
+public struct PreAuthorizedCodeGrant: Sendable {
   let preAuthorizedCode: String
   let length: Int?
   let inputMode: String?
@@ -119,7 +119,7 @@ public struct PreAuthorizedCodeGrant {
   }
 }
 
-public struct AuthorizedCodeGrant {
+public struct AuthorizedCodeGrant: Sendable {
   let issuerState: String?
   let authorizationServer: String?
 }
@@ -326,7 +326,7 @@ public struct ProofTypesSupported: Codable {
   let proofSigningAlgValuesSupported: [String]
 }
 
-public struct OidcMetadata: Codable {
+public struct OidcMetadata: Codable, Sendable {
   // OIDD
   let issuer: String
   let authorizationEndpoint: String
@@ -400,7 +400,7 @@ public struct OidcMetadata: Codable {
   }
 }
 
-public struct ClientConfiguration: Codable {
+public struct ClientConfiguration: Codable, Sendable {
   let clientId: String
   let clientSecret: String?
   let redirectUris: [String]?

@@ -7,7 +7,9 @@
 
 import Foundation
 
-public class WalletClientConfigurationDataSource: WalletClientConfigurationRepository {
+public final class WalletClientConfigurationDataSource: WalletClientConfigurationRepository,
+  Sendable
+{
 
   public init() {}
 
@@ -36,7 +38,7 @@ public class WalletClientConfigurationDataSource: WalletClientConfigurationRepos
       throw VerifiableCredentialsError.invalidClientConfiguration(
         "client configuration is invalid. client configuration can not be parsed to json")
     }
-    
+
     Logger.shared.debug("found client configuration: \(client)")
     return client
   }
