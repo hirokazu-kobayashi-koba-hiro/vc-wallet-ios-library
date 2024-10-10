@@ -103,7 +103,7 @@ public final class HttpClient: Sendable {
     case 400...499:
       throw HttpError.clientError(statusCode: statusCode, response: data)
     case 503:
-      throw HttpError.serverMentenanceError(statusCode: statusCode, response: data)
+      throw HttpError.serverMaintenanceError(statusCode: statusCode, response: data)
     case 500...599:
       throw HttpError.serverError(statusCode: statusCode, response: data)
     default:
@@ -146,7 +146,7 @@ public final class HttpClient: Sendable {
     case 400...499:
       throw HttpError.clientError(statusCode: statusCode, response: data)
     case 503:
-      throw HttpError.serverMentenanceError(statusCode: statusCode, response: data)
+      throw HttpError.serverMaintenanceError(statusCode: statusCode, response: data)
     case 500...599:
       throw HttpError.serverError(statusCode: statusCode, response: data)
     default:
