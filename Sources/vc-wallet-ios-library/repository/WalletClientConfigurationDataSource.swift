@@ -1,5 +1,5 @@
 //
-//  ClientConfiurationDataSource.swift
+//  WalletClientConfigurationDataSource.swift
 //  VcWalletLibrary
 //
 //  Created by 小林弘和 on 2024/10/09.
@@ -7,7 +7,11 @@
 
 import Foundation
 
-public class ClientConfiurationDataSource: WalletClientConfigurationRepository {
+public final class WalletClientConfigurationDataSource: WalletClientConfigurationRepository,
+  Sendable
+{
+
+  public init() {}
 
   public func register(issuer: String, configuration: ClientConfiguration) throws {
 
@@ -35,6 +39,7 @@ public class ClientConfiurationDataSource: WalletClientConfigurationRepository {
         "client configuration is invalid. client configuration can not be parsed to json")
     }
 
+    Logger.shared.debug("found client configuration: \(client)")
     return client
   }
 

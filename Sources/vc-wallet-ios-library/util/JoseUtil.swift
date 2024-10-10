@@ -9,7 +9,7 @@ import CryptoKit
 import Foundation
 import JOSESwift
 
-public class JoseUtil {
+public final class JoseUtil: Sendable {
 
   public static let shared = JoseUtil()
 

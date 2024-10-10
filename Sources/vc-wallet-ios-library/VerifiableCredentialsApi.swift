@@ -7,12 +7,20 @@
 
 import Foundation
 
-public class VerifiableCredentialsApi {
+public final class VerifiableCredentialsApi: @unchecked Sendable {
 
   public static let shared = VerifiableCredentialsApi()
-  private let service = VerifiableCredentialsService()
+  private var verifiableCredentialsService: VerifiableCredentialsService?
+
+  public func initialize(verifiableCredentialsService: VerifiableCredentialsService) {
+    self.verifiableCredentialsService = verifiableCredentialsService
+  }
 
   public func handlePreAuthorization(subject: String, url: String) async throws {
+    guard let service = verifiableCredentialsService else {
+      throw VerifiableCredentialsError.systemError(
+        "VerifiableCredentialsService is not initialized.")
+    }
 
     let credentialOfferRequest = CredentialOfferRequest(url: url)
     let credentialOfferRequestValidator = CredentialOfferRequestValidator(
@@ -32,6 +40,8 @@ public class VerifiableCredentialsApi {
     let oidcMetadata =
       try await service.getOidcMetadata(
         url: credentialIssuerMetadata.getOpenIdConfigurationEndpoint())
+    let clientConfiguration = try await service.getOrRegisterClientConfiguration(
+      oidcMetadata: oidcMetadata)
 
   }
 }

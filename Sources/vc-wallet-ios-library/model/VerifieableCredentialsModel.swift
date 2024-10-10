@@ -72,7 +72,7 @@ public class CredentialOfferRequestValidator {
   }
 }
 
-public struct CredentialOffer {
+public struct CredentialOffer: Sendable {
   let credentialIssuer: String
   let credentialConfigurationIds: [String]
   let preAuthorizedCodeGrant: PreAuthorizedCodeGrant?
@@ -102,7 +102,7 @@ public struct CredentialOffer {
   }
 }
 
-public struct PreAuthorizedCodeGrant {
+public struct PreAuthorizedCodeGrant: Sendable {
   let preAuthorizedCode: String
   let length: Int?
   let inputMode: String?
@@ -119,7 +119,7 @@ public struct PreAuthorizedCodeGrant {
   }
 }
 
-public struct AuthorizedCodeGrant {
+public struct AuthorizedCodeGrant: Sendable {
   let issuerState: String?
   let authorizationServer: String?
 }
@@ -326,7 +326,7 @@ public struct ProofTypesSupported: Codable {
   let proofSigningAlgValuesSupported: [String]
 }
 
-public struct OidcMetadata: Codable {
+public struct OidcMetadata: Codable, Sendable {
   // OIDD
   let issuer: String
   let authorizationEndpoint: String
@@ -400,7 +400,7 @@ public struct OidcMetadata: Codable {
   }
 }
 
-public struct ClientConfiguration: Codable {
+public struct ClientConfiguration: Codable, Sendable {
   let clientId: String
   let clientSecret: String?
   let redirectUris: [String]?
@@ -438,6 +438,84 @@ public struct ClientConfiguration: Codable {
   let authorizationEncryptedResponseEnc: String?
   let supportedJar: Bool?
   let issuer: String?
+
+  public init(
+    clientId: String,
+    clientSecret: String? = nil,
+    redirectUris: [String]? = nil,
+    tokenEndpointAuthMethod: String? = nil,
+    grantTypes: [String]? = nil,
+    responseTypes: [String]? = nil,
+    clientName: String? = nil,
+    clientUri: String? = nil,
+    logoUri: String? = nil,
+    scope: String? = nil,
+    contacts: String? = nil,
+    tosUri: String? = nil,
+    policyUri: String? = nil,
+    jwksUri: String? = nil,
+    jwks: String? = nil,
+    softwareId: String? = nil,
+    softwareVersion: String? = nil,
+    requestUris: [String]? = nil,
+    backchannelTokenDeliveryMode: String? = nil,
+    backchannelClientNotificationEndpoint: String? = nil,
+    backchannelAuthenticationRequestSigningAlg: String? = nil,
+    backchannelUserCodeParameter: Bool? = nil,
+    applicationType: String? = nil,
+    idTokenEncryptedResponseAlg: String? = nil,
+    idTokenEncryptedResponseEnc: String? = nil,
+    authorizationDetailsTypes: [String]? = nil,
+    tlsClientAuthSubjectDn: String? = nil,
+    tlsClientAuthSanDns: String? = nil,
+    tlsClientAuthSanUri: String? = nil,
+    tlsClientAuthSanIp: String? = nil,
+    tlsClientAuthSanEmail: String? = nil,
+    tlsClientCertificateBoundAccessTokens: Bool? = nil,
+    authorizationSignedResponseAlg: String? = nil,
+    authorizationEncryptedResponseAlg: String? = nil,
+    authorizationEncryptedResponseEnc: String? = nil,
+    supportedJar: Bool? = nil,
+    issuer: String? = nil
+  ) {
+    self.clientId = clientId
+    self.clientSecret = clientSecret
+    self.redirectUris = redirectUris
+    self.tokenEndpointAuthMethod = tokenEndpointAuthMethod
+    self.grantTypes = grantTypes
+    self.responseTypes = responseTypes
+    self.clientName = clientName
+    self.clientUri = clientUri
+    self.logoUri = logoUri
+    self.scope = scope
+    self.contacts = contacts
+    self.tosUri = tosUri
+    self.policyUri = policyUri
+    self.jwksUri = jwksUri
+    self.jwks = jwks
+    self.softwareId = softwareId
+    self.softwareVersion = softwareVersion
+    self.requestUris = requestUris
+    self.backchannelTokenDeliveryMode = backchannelTokenDeliveryMode
+    self.backchannelClientNotificationEndpoint = backchannelClientNotificationEndpoint
+    self.backchannelAuthenticationRequestSigningAlg = backchannelAuthenticationRequestSigningAlg
+    self.backchannelUserCodeParameter = backchannelUserCodeParameter
+    self.applicationType = applicationType
+    self.idTokenEncryptedResponseAlg = idTokenEncryptedResponseAlg
+    self.idTokenEncryptedResponseEnc = idTokenEncryptedResponseEnc
+    self.authorizationDetailsTypes = authorizationDetailsTypes
+    self.tlsClientAuthSubjectDn = tlsClientAuthSubjectDn
+    self.tlsClientAuthSanDns = tlsClientAuthSanDns
+    self.tlsClientAuthSanUri = tlsClientAuthSanUri
+    self.tlsClientAuthSanIp = tlsClientAuthSanIp
+    self.tlsClientAuthSanEmail = tlsClientAuthSanEmail
+    self.tlsClientCertificateBoundAccessTokens = tlsClientCertificateBoundAccessTokens
+    self.authorizationSignedResponseAlg = authorizationSignedResponseAlg
+    self.authorizationEncryptedResponseAlg = authorizationEncryptedResponseAlg
+    self.authorizationEncryptedResponseEnc = authorizationEncryptedResponseEnc
+    self.supportedJar = supportedJar
+    self.issuer = issuer
+  }
 
   func scopes() -> [String] {
 
