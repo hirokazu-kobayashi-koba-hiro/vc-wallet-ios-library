@@ -25,7 +25,7 @@ public enum HttpError: Error {
   case clientError(statusCode: Int, response: Data? = nil)
   case tooManyRequestsError(statusCode: Int = 429, response: Data? = nil)
   case serverError(statusCode: Int, response: Data? = nil)
-  case serverMentenanceError(statusCode: Int = 503, response: Data? = nil)
+  case serverMaintenanceError(statusCode: Int = 503, response: Data? = nil)
 
 }
 
