@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import UIKit
 
 public final class VerifiableCredentialsApi: @unchecked Sendable {
 
@@ -16,7 +17,10 @@ public final class VerifiableCredentialsApi: @unchecked Sendable {
     self.verifiableCredentialsService = verifiableCredentialsService
   }
 
-  public func handlePreAuthorization(subject: String, url: String) async throws {
+  public func handlePreAuthorization(
+    from: UIViewController, subject: String, url: String,
+    interactor: VerifiableCredentialInteractor = DefaultVerifiableCredentialInteractor()
+  ) async throws {
     guard let service = verifiableCredentialsService else {
       throw VerifiableCredentialsError.systemError(
         "VerifiableCredentialsService is not initialized.")
@@ -43,5 +47,31 @@ public final class VerifiableCredentialsApi: @unchecked Sendable {
     let clientConfiguration = try await service.getOrRegisterClientConfiguration(
       oidcMetadata: oidcMetadata)
 
+    let (result, txCode) = await interact(
+      from: from, credentialIssuerMetadata: credentialIssuerMetadata,
+      credentialOffer: credentialOffer, interactor: interactor)
+    Logger.shared.debug("handlePreAuthorization: \(result) \(txCode)")
+
+  }
+
+  private func interact(
+    from: UIViewController,
+    credentialIssuerMetadata: CredentialIssuerMetadata,
+    credentialOffer: CredentialOffer,
+    interactor: VerifiableCredentialInteractor
+  ) async -> (Bool, String?) {
+    await withCheckedContinuation { continuation in
+      interactor.confirm(
+        viewController: from, credentialIssuerMetadata: credentialIssuerMetadata,
+        credentialOffer: credentialOffer
+      ) { result, txCode in
+
+        if result {
+          continuation.resume(returning: (true, txCode))
+        } else {
+          continuation.resume(returning: (false, nil))
+        }
+      }
+    }
   }
 }
