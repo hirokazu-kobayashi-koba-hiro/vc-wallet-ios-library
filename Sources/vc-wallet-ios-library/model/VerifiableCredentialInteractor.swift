@@ -27,6 +27,6 @@ public class DefaultVerifiableCredentialInteractor: VerifiableCredentialInteract
     credentialOffer: CredentialOffer,
     callback: @escaping (Bool, String?) -> Void
   ) {
-    callback(true, "123")
+    callback(true, nil)
   }
 }

@@ -73,8 +73,18 @@ public final class HttpClient: Sendable {
 
     Logger.shared.debug("request: \(request)")
 
-    if let body = body {
+    if let contentType = headers?["Content-Type"],
+      contentType == "application/x-www-form-urlencoded"
+    {
+      if let body = body {
+        let formBody = body.map { "\($0.key)=\($0.value)" }
+          .joined(separator: "&")
+        Logger.shared.debug("request body (url-encoded): \(formBody)")
+        request.httpBody = formBody.data(using: .utf8)
+      }
+    } else if let body = body {
       let jsonData = try JSONSerialization.data(withJSONObject: body, options: [])
+      Logger.shared.debug("request body (JSON): \(String(data: jsonData, encoding: .utf8)!)")
       request.httpBody = jsonData
     }
 
@@ -85,13 +95,53 @@ public final class HttpClient: Sendable {
     return responseBody
   }
 
+  public func post<T: Decodable>(
+    url: String, headers: [String: String]? = nil,
+    body: [String: Any]? = nil,
+    responseType: T.Type,
+    enableSnakeCase: Bool = true
+  ) async throws -> T {
+    guard let url = URL(string: url) else {
+      throw URLError(.badURL)
+    }
+
+    var request = URLRequest(url: url)
+    request.httpMethod = "POST"
+    headers?.forEach { header in
+      request.setValue(header.value, forHTTPHeaderField: header.key)
+    }
+
+    if let contentType = headers?["Content-Type"],
+      contentType == "application/x-www-form-urlencoded"
+    {
+      if let body = body {
+        let formBody = body.map { "\($0.key)=\($0.value)" }
+          .joined(separator: "&")
+        Logger.shared.debug("request body (url-encoded): \(formBody)")
+        request.httpBody = formBody.data(using: .utf8)
+      }
+    } else if let body = body {
+      let jsonData = try JSONSerialization.data(withJSONObject: body, options: [])
+      Logger.shared.debug("request body (JSON): \(String(data: jsonData, encoding: .utf8)!)")
+      request.httpBody = jsonData
+    }
+
+    Logger.shared.debug("request: \(request)")
+
+    let (data, response) = try await urlSession.data(for: request)
+
+    return try handleResponse(
+      response: response, data: data, responseType: responseType, enableSnakeCase: enableSnakeCase)
+  }
+
   private func handleResponse(response: URLResponse, data: Data) throws -> [String: Any] {
     guard let httpResponse = response as? HTTPURLResponse else {
       throw URLError(.badServerResponse)
     }
     let statusCode = httpResponse.statusCode
-    print("HTTP response with status code: \(statusCode)")
+    Logger.shared.debug("HTTP response with status code: \(statusCode)")
     let responseJson = readFromJson(data)
+
     guard let response = responseJson else {
       throw URLError(.cannotParseResponse)
     }
@@ -136,14 +186,17 @@ public final class HttpClient: Sendable {
     if enableSnakeCase {
       decoder.keyDecodingStrategy = .convertFromSnakeCase
     }
-    let decodedResponse = try decoder.decode(T.self, from: data)
 
     switch statusCode {
     case 200...299:
+      let decodedResponse = try decoder.decode(T.self, from: data)
+      Logger.shared.debug("Response: \(decodedResponse)")
       return decodedResponse
     case 429:
       throw HttpError.tooManyRequestsError(statusCode: statusCode, response: data)
     case 400...499:
+      let jsonObject = try JSONSerialization.jsonObject(with: data, options: [])
+      Logger.shared.debug("ClientErrorResponse: \(jsonObject)")
       throw HttpError.clientError(statusCode: statusCode, response: data)
     case 503:
       throw HttpError.serverMaintenanceError(statusCode: statusCode, response: data)

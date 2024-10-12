@@ -1,5 +1,5 @@
 //
-//  VerifieableCredentialsModel.swift
+//  VerifieableCredentialsDataModel.swift
 //
 //
 //  Created by 小林弘和 on 2024/10/07.
@@ -23,52 +23,6 @@ public struct CredentialOfferRequest {
 
   public func credentialOfferUri() -> String? {
     return params["credential_offer_uri"]
-  }
-}
-
-public class CredentialOfferRequestValidator {
-  let scheme: String?
-  let params: [String: String]
-
-  public init(credentialOfferRequest: CredentialOfferRequest) {
-    self.scheme = credentialOfferRequest.scheme
-    self.params = credentialOfferRequest.params
-  }
-
-  public func validate() throws {
-    try throwExceptionIfNotValidScheme()
-    try throwExceptionIfRequiredParams()
-    try throwExceptionIfDuplicatedParams()
-  }
-
-  func throwExceptionIfNotValidScheme() throws {
-
-    guard let schemeValue = scheme else {
-      throw VerifiableCredentialsError.invalidCredentialOfferRequest("Scheme is required.")
-    }
-
-    if schemeValue != "openid-credential-offer" {
-      throw VerifiableCredentialsError.invalidCredentialOfferRequest(
-        "Scheme must be 'openid-credential-offer://'.")
-    }
-  }
-
-  func throwExceptionIfRequiredParams() throws {
-
-    if params["credential_offer"] == nil && params["credential_offer_uri"] == nil {
-      throw VerifiableCredentialsError.invalidCredentialOfferRequest(
-        "Credential offer request must contain either credential_offer or credential_offer_uri.")
-    }
-  }
-
-  func throwExceptionIfDuplicatedParams() throws {
-
-    if let credentialOffer = params["credential_offer"],
-      let credentialOfferUri = params["credential_offer_uri"]
-    {
-      throw VerifiableCredentialsError.invalidCredentialOfferRequest(
-        "Credential offer request must not contain both credential_offer and credential_offer_uri.")
-    }
   }
 }
 
@@ -521,5 +475,55 @@ public struct ClientConfiguration: Codable, Sendable {
 
     guard let scope else { return [] }
     return scope.split(separator: " ").map { String($0) }
+  }
+}
+
+public struct TokenResponse: Codable {
+  let accessToken: String
+  let refreshToken: String?
+  let idToken: String?
+  let expiresIn: Int64
+  let scope: String?
+  let cNonce: String?
+  let cNonceExpiresIn: Int?
+
+  init(
+    accessToken: String,
+    refreshToken: String? = nil,
+    idToken: String? = nil,
+    expiresIn: Int64,
+    scope: String? = nil,
+    cNonce: String? = nil,
+    cNonceExpiresIn: Int? = nil
+  ) {
+    self.accessToken = accessToken
+    self.refreshToken = refreshToken
+    self.idToken = idToken
+    self.expiresIn = expiresIn
+    self.scope = scope
+    self.cNonce = cNonce
+    self.cNonceExpiresIn = cNonceExpiresIn
+  }
+}
+
+public struct CredentialResponse: Codable {
+  let credential: String?
+  let transactionId: String?
+  let cNonce: String?
+  let cNonceExpiresIn: Int?
+  let notificationId: String?
+
+  init(
+    credential: String? = nil,
+    transactionId: String? = nil,
+    cNonce: String? = nil,
+    cNonceExpiresIn: Int? = nil,
+    notificationId: String? = nil
+  ) {
+    self.credential = credential
+    self.transactionId = transactionId
+    self.cNonce = cNonce
+    self.cNonceExpiresIn = cNonceExpiresIn
+    self.notificationId = notificationId
   }
 }
