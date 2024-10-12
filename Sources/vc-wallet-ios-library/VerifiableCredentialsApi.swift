@@ -11,14 +11,14 @@ import UIKit
 public final class VerifiableCredentialsApi: @unchecked Sendable {
 
   public static let shared = VerifiableCredentialsApi()
-  private var waletConfiguration: WalletConfiguration?
+  private var walletConfiguration: WalletConfiguration?
   private var verifiableCredentialsService: VerifiableCredentialsService?
 
   public func initialize(
-    waletConfiguration: WalletConfiguration,
+    walletConfiguration: WalletConfiguration,
     verifiableCredentialsService: VerifiableCredentialsService
   ) {
-    self.waletConfiguration = waletConfiguration
+    self.walletConfiguration = walletConfiguration
     self.verifiableCredentialsService = verifiableCredentialsService
   }
 
@@ -26,7 +26,7 @@ public final class VerifiableCredentialsApi: @unchecked Sendable {
     from: UIViewController, subject: String, url: String,
     interactor: VerifiableCredentialInteractor = DefaultVerifiableCredentialInteractor()
   ) async throws {
-    guard let configuration = waletConfiguration, let service = verifiableCredentialsService else {
+    guard let configuration = walletConfiguration, let service = verifiableCredentialsService else {
       throw VerifiableCredentialsError.systemError(
         "VerifiableCredentialsService is not initialized.")
     }
@@ -74,10 +74,18 @@ public final class VerifiableCredentialsApi: @unchecked Sendable {
       cNonce: tokenResponse.cNonce, clientId: clientConfiguration.clientId,
       issuer: oidcMetadata.issuer, privateKey: configuration.privateKey)
     let proof = try proofCreator.create()
-    let credentilResponse = try await service.requestCredential(
+    let credentialResponse = try await service.requestCredential(
       url: credentialIssuerMetadata.credentialEndpoint, dpopJwt: nil,
       accessToken: tokenResponse.accessToken, verifiableCredentialType: verifiableCredentialsType,
       vct: vct)
+
+    let jwtVcConfiguration = try await service.getJwksConfiguration(
+      jwtVcIssuerEndpoint: credentialOffer.jwtVcIssuerEndpoint())
+    let jwks = try await service.getJwks(jwtVcConfiguration: jwtVcConfiguration)
+
+    if let credential = credentialResponse.credential {
+
+    }
 
   }
 

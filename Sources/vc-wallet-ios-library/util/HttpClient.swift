@@ -189,6 +189,11 @@ public final class HttpClient: Sendable {
 
     switch statusCode {
     case 200...299:
+      if responseType == String.self, let responseString = String(data: data, encoding: .utf8) as? T
+      {
+        Logger.shared.debug("Response (String): \(responseString)")
+        return responseString
+      }
       let decodedResponse = try decoder.decode(T.self, from: data)
       Logger.shared.debug("Response: \(decodedResponse)")
       return decodedResponse

@@ -138,6 +138,20 @@ public class VerifiableCredentialsService {
     )
   }
 
+  public func getJwksConfiguration(jwtVcIssuerEndpoint: String) async throws -> JwtVcConfiguration {
+    return try await httpClient.get(url: jwtVcIssuerEndpoint, responseType: JwtVcConfiguration.self)
+  }
+
+  public func getJwks(jwtVcConfiguration: JwtVcConfiguration) async throws -> String {
+    if let jwks = jwtVcConfiguration.jwks {
+      return jwks
+    }
+    if let jwksUri = jwtVcConfiguration.jwksUri {
+      return try await httpClient.get(url: jwksUri, responseType: String.self)
+    }
+    throw VerifiableCredentialsError.invalidJwtVcConfiguration("found neither jwks nor jwksUri")
+  }
+
   func registerClientConfiguration(oidcMetadata: OidcMetadata) async -> ClientConfiguration {
     do {
       //FIXME dynamic setting

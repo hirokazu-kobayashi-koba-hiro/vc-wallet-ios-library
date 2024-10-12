@@ -24,14 +24,14 @@ final class VerifiableCredentialsApiTests: XCTestCase {
     let verifiableCredentialsService = VerifiableCredentialsService(
       walletClientConfigurationRepository: WalletClientConfigurationDataSource())
     VerifiableCredentialsApi.shared.initialize(
-      waletConfiguration: WalletConfiguration(),
+      walletConfiguration: WalletConfiguration(),
       verifiableCredentialsService: verifiableCredentialsService)
 
     try await VerifiableCredentialsApi.shared.handlePreAuthorization(
       from: viewController,
       subject: "test",
       url:
-        "openid-credential-offer://?credential_offer_uri=https://trial.authlete.net/api/offer/4cHGMGbInIxMisY4LW7tjsk7nNL318ccqMmlbYCkxQ0"
+        "openid-credential-offer://?credential_offer_uri=https://trial.authlete.net/api/offer/ERs9KlWVYYONh1-TyunAOZi3UOgZJ22edOhI6_KAF-c"
     )
   }
 

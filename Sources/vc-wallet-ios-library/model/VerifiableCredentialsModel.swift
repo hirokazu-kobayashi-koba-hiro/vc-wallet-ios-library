@@ -51,6 +51,77 @@ public class CredentialOfferRequestValidator {
   }
 }
 
+public class CredentialOfferCreator {
+  let map: [String: Any]
+
+  public init(_ map: [String: Any]) {
+    self.map = map
+  }
+
+  public func create() throws -> CredentialOffer {
+    guard let credentialIssuer = map["credential_issuer"] as? String,
+      let credentialConfigurationIds = map["credential_configuration_ids"] as? [String]
+    else {
+
+      Logger.shared.debug(
+        "credential offer request does not contain credential_issuer or credential_configuration_ids"
+      )
+      throw VerifiableCredentialsError.invalidCredentialOfferRequest()
+    }
+
+    guard let grants = map["grants"] as? [String: Any] else {
+      return CredentialOffer(
+        credentialIssuer: credentialIssuer, credentialConfigurationIds: credentialConfigurationIds)
+    }
+
+    let preAuthorizedCodeGrant = toPreAuthorizedGrant(grants)
+    let authorizedCodeGrant = toAuthorizationCodeGrant(grants)
+
+    return CredentialOffer(
+      credentialIssuer: credentialIssuer, credentialConfigurationIds: credentialConfigurationIds,
+      preAuthorizedCodeGrant: preAuthorizedCodeGrant, authorizedCodeGrant: authorizedCodeGrant)
+  }
+
+  func toAuthorizationCodeGrant(_ json: [String: Any]) -> AuthorizedCodeGrant? {
+    guard let authorizationCodeObject = json["authorization_code"] as? [String: Any] else {
+      return nil
+    }
+
+    let issuerState = authorizationCodeObject["issuer_state"] as? String
+    let authorizationServer = authorizationCodeObject["authorization_server"] as? String
+
+    return AuthorizedCodeGrant(
+      issuerState: issuerState,
+      authorizationServer: authorizationServer
+    )
+  }
+
+  func toPreAuthorizedGrant(_ json: [String: Any]) -> PreAuthorizedCodeGrant? {
+    guard
+      let preAuthorizationCodeObject = json["urn:ietf:params:oauth:grant-type:pre-authorized_code"]
+        as? [String: Any],
+      let preAuthorizedCode = preAuthorizationCodeObject["pre-authorized_code"] as? String
+    else {
+      return nil
+    }
+
+    if let txCodeObject = preAuthorizationCodeObject["tx_code"] as? [String: Any] {
+      let length = txCodeObject["length"] as? Int
+      let inputMode = txCodeObject["input_mode"] as? String
+      let description = txCodeObject["description"] as? String
+
+      return PreAuthorizedCodeGrant(
+        preAuthorizedCode: preAuthorizedCode,
+        length: length,
+        inputMode: inputMode,
+        description: description
+      )
+    } else {
+      return PreAuthorizedCodeGrant(preAuthorizedCode: preAuthorizedCode)
+    }
+  }
+}
+
 public class CredentialRequestProofCreator {
   private let cNonce: String?
   private let clientId: String
@@ -81,7 +152,6 @@ public class CredentialRequestProofCreator {
     let jwt = try JoseUtil.shared.sign(
       algorithm: "ES256", privateKeyAsJwk: privateKey, headers: header, claims: payload)
 
-    // Return the proof
     return ["proof_type": "jwt", "proof": jwt]
   }
 }
