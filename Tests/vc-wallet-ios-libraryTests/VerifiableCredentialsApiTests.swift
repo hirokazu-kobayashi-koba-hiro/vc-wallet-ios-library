@@ -19,15 +19,18 @@ final class VerifiableCredentialsApiTests: XCTestCase {
   }
 
   func testHandlePreAuthorization() async throws {
+    let viewController = await UIViewController()
+
     let verifiableCredentialsService = VerifiableCredentialsService(
       walletClientConfigurationRepository: WalletClientConfigurationDataSource())
     VerifiableCredentialsApi.shared.initialize(
       verifiableCredentialsService: verifiableCredentialsService)
 
     try await VerifiableCredentialsApi.shared.handlePreAuthorization(
+      from: viewController,
       subject: "test",
       url:
-        "openid-credential-offer://?credential_offer_uri=https://trial.authlete.net/api/offer/MUzi6yE2swpabfvFLoG89y3GeCtawmUvvoGigQ-pf_o"
+        "openid-credential-offer://?credential_offer_uri=https://trial.authlete.net/api/offer/KX2v39HWx_t8sS3jRg7WBz0EyhtQnSPczvhVqtitCFM"
     )
   }
 
