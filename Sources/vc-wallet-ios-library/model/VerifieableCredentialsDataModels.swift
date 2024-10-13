@@ -131,7 +131,7 @@ public struct CredentialIssuerMetadata: Codable {
   }
 }
 
-enum VerifiableCredentialsType: String {
+public enum VerifiableCredentialsType: String {
   case msoMdoc = "mso_mdoc"
   case sdJwt = "vc+sd-jwt"
   case jwtVcJson = "jwt_vc_json"

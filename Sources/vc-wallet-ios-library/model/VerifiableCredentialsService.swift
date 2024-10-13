@@ -10,10 +10,18 @@ import Foundation
 public class VerifiableCredentialsService {
 
   private let walletClientConfigurationRepository: WalletClientConfigurationRepository
+  private let verifiableCredentialRecordRepository: VerifiableCredentialRecordRepository
+  private let credentialIssuanceResultRepository: CredentialIssuanceResultRepository
   private let httpClient: HttpClient
 
-  public init(walletClientConfigurationRepository: WalletClientConfigurationRepository) {
+  public init(
+    walletClientConfigurationRepository: WalletClientConfigurationRepository,
+    verifiableCredentialRecordRepository: VerifiableCredentialRecordRepository,
+    credentialIssuanceResultRepository: CredentialIssuanceResultRepository
+  ) {
     self.walletClientConfigurationRepository = walletClientConfigurationRepository
+    self.verifiableCredentialRecordRepository = verifiableCredentialRecordRepository
+    self.credentialIssuanceResultRepository = credentialIssuanceResultRepository
     self.httpClient = HttpClient(sessionConfiguration: URLSessionConfiguration.ephemeral)
   }
 
@@ -150,6 +158,37 @@ public class VerifiableCredentialsService {
       return try await httpClient.get(url: jwksUri, responseType: String.self)
     }
     throw VerifiableCredentialsError.invalidJwtVcConfiguration("found neither jwks nor jwksUri")
+  }
+
+  public func registerCredential(
+    subject: String,
+    verifiableCredentialsRecord: VerifiableCredentialsRecord
+  ) {
+
+    verifiableCredentialRecordRepository.register(sub: subject, record: verifiableCredentialsRecord)
+  }
+
+  public func registerCredentialIssuanceResult(
+    subject: String,
+    issuer: String,
+    credentialConfigurationId: String,
+    credentialResponse: CredentialResponse
+  ) {
+    let id = UUID().uuidString
+    let credentialIssuanceResult = CredentialIssuanceResult(
+      id: id,
+      issuer: issuer,
+      credentialConfigurationId: credentialConfigurationId,
+      credential: credentialResponse.credential,
+      transactionId: credentialResponse.transactionId,
+      cNonce: credentialResponse.cNonce,
+      cNonceExpiresIn: credentialResponse.cNonceExpiresIn,
+      notificationId: credentialResponse.notificationId,
+      status: credentialResponse.credential != nil ? .success : .pending
+    )
+
+    credentialIssuanceResultRepository.register(
+      subject: subject, credentialIssuanceResult: credentialIssuanceResult)
   }
 
   func registerClientConfiguration(oidcMetadata: OidcMetadata) async -> ClientConfiguration {

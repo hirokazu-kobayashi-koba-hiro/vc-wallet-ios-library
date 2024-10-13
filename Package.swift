@@ -16,7 +16,10 @@ let package = Package(
   ],
   dependencies: [
     // Reference to your internal library
-    .package(url: "https://github.com/airsidemobile/JOSESwift.git", from: "3.0.0")
+    .package(url: "https://github.com/airsidemobile/JOSESwift.git", from: "3.0.0"),
+    .package(
+      url: "https://github.com/eu-digital-identity-wallet/eudi-lib-sdjwt-swift.git",
+      .upToNextMajor(from: "0.1.0")),
   ],
   targets: [
     // Targets are the basic building blocks of a package, defining a module or a test suite.
@@ -24,7 +27,8 @@ let package = Package(
     .target(
       name: "VcWalletLibrary",
       dependencies: [
-        .product(name: "JOSESwift", package: "JOSESwift")
+        .product(name: "JOSESwift", package: "JOSESwift"),
+        .product(name: "eudi-lib-sdjwt-swift", package: "eudi-lib-sdjwt-swift"),
       ]
     ),
     .testTarget(
