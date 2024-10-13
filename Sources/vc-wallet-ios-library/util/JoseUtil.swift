@@ -43,11 +43,10 @@ public final class JoseUtil: Sendable {
     return jwtValue
   }
 
-  public func verify(jws: String, algorithm: String, publicKeyAsJwk: String) throws -> VerifiedJose
-  {
-    let algorithm = try toAlgorithm(algorithm: algorithm)
-
+  public func verify(jws: String, publicKeyAsJwk: String) throws -> VerifiedJose {
     let jws = try JWS(compactSerialization: jws)
+    let algorithm = try toAlgorithm(algorithm: jws.header.algorithm?.rawValue)
+
     let publicKey = try SecKey.convertFromPublicKeyFormattedJwk(
       algorithm: algorithm, publicKey: publicKeyAsJwk)
     guard let verifier = Verifier(signatureAlgorithm: algorithm, key: publicKey) else {
@@ -187,7 +186,7 @@ extension Data {
   }
 }
 
-func toAlgorithm(algorithm: String) throws -> SignatureAlgorithm {
+func toAlgorithm(algorithm: String?) throws -> SignatureAlgorithm {
 
   switch algorithm {
   case "HS256":
@@ -215,6 +214,6 @@ func toAlgorithm(algorithm: String) throws -> SignatureAlgorithm {
   case "ES512":
     return SignatureAlgorithm.ES512
   default:
-    throw JoseUtilError.unsupportedAlgorithm(algorithm)
+    throw JoseUtilError.unsupportedAlgorithm(algorithm ?? "unknown")
   }
 }

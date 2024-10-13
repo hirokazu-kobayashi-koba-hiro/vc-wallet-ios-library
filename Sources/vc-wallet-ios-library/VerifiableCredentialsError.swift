@@ -16,6 +16,8 @@ public enum VerifiableCredentialsError: Error {
   case unsupportedCredentialFormat(_ description: String? = nil)
   case vcIssuerUnsupportedDynamicClientRegistration(_ description: String? = nil)
   case notAuthenticated(_ description: String? = nil)
+  case notFoundJwk(_ description: String? = nil)
+  case invalidSdJwt(_ description: String? = nil)
   case networkError
   case systemError(_ description: String? = nil)
   case unknownError

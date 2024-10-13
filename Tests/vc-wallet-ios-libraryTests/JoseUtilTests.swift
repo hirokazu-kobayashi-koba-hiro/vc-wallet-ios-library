@@ -45,7 +45,7 @@ final class JoseUtilTests: XCTestCase {
       XCTAssertTrue(jws.hasPrefix("eyJ"))
 
       let verifiedJose = try JoseUtil.shared.verify(
-        jws: jws, algorithm: "ES256", publicKeyAsJwk: publicKeyValue)
+        jws: jws, publicKeyAsJwk: publicKeyValue)
       print(verifiedJose)
 
     } catch (let error) {
