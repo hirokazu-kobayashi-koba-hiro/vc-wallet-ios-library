@@ -15,7 +15,6 @@ public final class VerifiableCredentialRecordDataSource: VerifiableCredentialRec
 
   public init() {}
 
-  // Register a new record
   public func register(sub: String, record: VerifiableCredentialsRecord) {
     let key = "\(keyPrefix)\(sub)"
     var records = find(sub: sub)?.values ?? []
@@ -23,7 +22,6 @@ public final class VerifiableCredentialRecordDataSource: VerifiableCredentialRec
     saveRecords(key: key, records: records)
   }
 
-  // Find all records for a given subject
   public func find(sub: String) -> VerifiableCredentialsRecords? {
     let key = "\(keyPrefix)\(sub)"
     if let data = UserDefaults.standard.data(forKey: key),
@@ -34,7 +32,6 @@ public final class VerifiableCredentialRecordDataSource: VerifiableCredentialRec
     return nil
   }
 
-  // Find records by issuer
   public func find(sub: String, credentialIssuer: String) -> VerifiableCredentialsRecords? {
     if let records = find(sub: sub)?.values {
       let filteredRecords = records.filter { $0.issuer == credentialIssuer }
@@ -43,12 +40,10 @@ public final class VerifiableCredentialRecordDataSource: VerifiableCredentialRec
     return nil
   }
 
-  // Get all records as a collection
   public func getAllAsCollection(sub: String) -> VerifiableCredentialsRecords? {
     return find(sub: sub)
   }
 
-  // Save records to UserDefaults
   private func saveRecords(key: String, records: [VerifiableCredentialsRecord]) {
     if let data = try? JSONEncoder().encode(records) {
       UserDefaults.standard.set(data, forKey: key)
