@@ -10,10 +10,15 @@ import Foundation
 public class VerifiableCredentialsService {
 
   private let walletClientConfigurationRepository: WalletClientConfigurationRepository
+  private let verifiableCredentialRecordRepository: VerifiableCredentialRecordRepository
   private let httpClient: HttpClient
 
-  public init(walletClientConfigurationRepository: WalletClientConfigurationRepository) {
+  public init(
+    walletClientConfigurationRepository: WalletClientConfigurationRepository,
+    verifiableCredentialRecordRepository: VerifiableCredentialRecordRepository
+  ) {
     self.walletClientConfigurationRepository = walletClientConfigurationRepository
+    self.verifiableCredentialRecordRepository = verifiableCredentialRecordRepository
     self.httpClient = HttpClient(sessionConfiguration: URLSessionConfiguration.ephemeral)
   }
 
@@ -150,6 +155,14 @@ public class VerifiableCredentialsService {
       return try await httpClient.get(url: jwksUri, responseType: String.self)
     }
     throw VerifiableCredentialsError.invalidJwtVcConfiguration("found neither jwks nor jwksUri")
+  }
+
+  public func registerCredential(
+    subject: String,
+    verifiableCredentialsRecord: VerifiableCredentialsRecord
+  ) {
+
+    verifiableCredentialRecordRepository.register(sub: subject, record: verifiableCredentialsRecord)
   }
 
   func registerClientConfiguration(oidcMetadata: OidcMetadata) async -> ClientConfiguration {

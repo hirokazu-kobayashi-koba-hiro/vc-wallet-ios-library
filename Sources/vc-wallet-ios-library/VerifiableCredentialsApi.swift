@@ -92,7 +92,7 @@ public final class VerifiableCredentialsApi: @unchecked Sendable {
 
       let record = try transformer.transform()
       print(record)
-
+      service.registerCredential(subject: subject, verifiableCredentialsRecord: record)
     }
 
   }

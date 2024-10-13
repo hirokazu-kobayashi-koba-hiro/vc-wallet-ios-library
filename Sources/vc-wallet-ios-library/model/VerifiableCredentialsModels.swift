@@ -158,7 +158,7 @@ public class CredentialRequestProofCreator {
   }
 }
 
-public class VerifiableCredentialsRecord {
+public class VerifiableCredentialsRecord: Codable {
   let id: String
   let issuer: String
   let type: String
@@ -177,6 +177,37 @@ public class VerifiableCredentialsRecord {
     self.payload = payload
   }
 
+  enum CodingKeys: String, CodingKey {
+    case id, issuer, type, format, rawVc, payload
+  }
+
+  public required init(from decoder: Decoder) throws {
+    let container = try decoder.container(keyedBy: CodingKeys.self)
+    id = try container.decode(String.self, forKey: .id)
+    issuer = try container.decode(String.self, forKey: .issuer)
+    type = try container.decode(String.self, forKey: .type)
+    format = try container.decode(String.self, forKey: .format)
+    rawVc = try container.decode(String.self, forKey: .rawVc)
+
+    // Custom decoding for payload as [String: Any]
+    let payloadData = try container.decode(Data.self, forKey: .payload)
+    payload =
+      try JSONSerialization.jsonObject(with: payloadData, options: []) as? [String: Any] ?? [:]
+  }
+
+  public func encode(to encoder: Encoder) throws {
+    var container = encoder.container(keyedBy: CodingKeys.self)
+    try container.encode(id, forKey: .id)
+    try container.encode(issuer, forKey: .issuer)
+    try container.encode(type, forKey: .type)
+    try container.encode(format, forKey: .format)
+    try container.encode(rawVc, forKey: .rawVc)
+
+    // Custom encoding for payload as JSON data
+    let payloadData = try JSONSerialization.data(withJSONObject: payload, options: [])
+    try container.encode(payloadData, forKey: .payload)
+  }
+
   func isSdJwt() -> Bool {
     return format == "vc+sd-jwt"
   }
@@ -187,6 +218,45 @@ public class VerifiableCredentialsRecord {
 
   func isLdp() -> Bool {
     return format == "ldp_vc"
+  }
+}
+
+public struct VerifiableCredentialsRecords: Sequence {
+  var values: [VerifiableCredentialsRecord]
+
+  init() {
+    self.values = []
+  }
+
+  init(values: [VerifiableCredentialsRecord]) {
+    self.values = values
+  }
+
+  mutating func add(record: VerifiableCredentialsRecord) -> VerifiableCredentialsRecords {
+    var arrayList = values
+    arrayList.append(record)
+    return VerifiableCredentialsRecords(values: arrayList)
+  }
+
+  func find(ids: [String]) -> VerifiableCredentialsRecords {
+    let filtered = values.filter { ids.contains($0.id) }
+    return VerifiableCredentialsRecords(values: filtered)
+  }
+
+  func find(id: String) -> VerifiableCredentialsRecord? {
+    return values.first { $0.id == id }
+  }
+
+  func rawVcList() -> [String] {
+    return values.map { $0.rawVc }
+  }
+
+  public func makeIterator() -> IndexingIterator<[VerifiableCredentialsRecord]> {
+    return values.makeIterator()
+  }
+
+  func size() -> Int {
+    return values.count
   }
 }
 
