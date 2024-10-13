@@ -17,3 +17,15 @@ public protocol VerifiableCredentialRecordRepository {
   func getAllAsCollection(sub: String) -> VerifiableCredentialsRecords?
   func find(sub: String, credentialIssuer: String) -> VerifiableCredentialsRecords?
 }
+
+public protocol CredentialIssuanceResultRepository {
+  func register(subject: String, credentialIssuanceResult: CredentialIssuanceResult)
+
+  func find(subject: String) -> [CredentialIssuanceResult]
+
+  func get(subject: String, id: String) throws -> CredentialIssuanceResult
+
+  func update(subject: String, credentialIssuanceResult: CredentialIssuanceResult)
+
+  func delete(subject: String, id: String)
+}

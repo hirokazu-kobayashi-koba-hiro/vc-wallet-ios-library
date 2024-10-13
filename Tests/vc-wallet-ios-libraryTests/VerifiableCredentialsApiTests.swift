@@ -23,7 +23,9 @@ final class VerifiableCredentialsApiTests: XCTestCase {
 
     let verifiableCredentialsService = VerifiableCredentialsService(
       walletClientConfigurationRepository: WalletClientConfigurationDataSource(),
-      verifiableCredentialRecordRepository: VerifiableCredentialRecordDataSource())
+      verifiableCredentialRecordRepository: VerifiableCredentialRecordDataSource(),
+      credentialIssuanceResultRepository: CredentialIssuanceResultDataSource()
+    )
     VerifiableCredentialsApi.shared.initialize(
       walletConfiguration: WalletConfiguration(),
       verifiableCredentialsService: verifiableCredentialsService)
@@ -32,7 +34,7 @@ final class VerifiableCredentialsApiTests: XCTestCase {
       from: viewController,
       subject: "test",
       url:
-        "openid-credential-offer://?credential_offer_uri=https://trial.authlete.net/api/offer/idwVjINoZf6l9MNMyAtkxFEf2OZFSBYD8neZH29ofiA"
+        "openid-credential-offer://?credential_offer_uri=https://trial.authlete.net/api/offer/azA2nLhKrWaUfmk_kXb9wDxRWpXbhynRjWr_dIY4Gb8"
     )
   }
 

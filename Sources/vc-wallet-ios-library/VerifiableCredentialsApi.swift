@@ -91,10 +91,13 @@ public final class VerifiableCredentialsApi: @unchecked Sendable {
       )
 
       let record = try transformer.transform()
-      print(record)
       service.registerCredential(subject: subject, verifiableCredentialsRecord: record)
     }
 
+    service.registerCredentialIssuanceResult(
+      subject: subject, issuer: credentialIssuerMetadata.credentialIssuer,
+      credentialConfigurationId: credentialOffer.credentialConfigurationIds[0],
+      credentialResponse: credentialResponse)
   }
 
   private func interact(

@@ -293,3 +293,42 @@ public class VerifiableCredentialTransformer {
     }
   }
 }
+
+public struct CredentialIssuanceResult: Codable {
+  let id: String
+  let issuer: String
+  let credentialConfigurationId: String
+  let credential: String?
+  let transactionId: String?
+  let cNonce: String?
+  let cNonceExpiresIn: Int?
+  let notificationId: String?
+  let status: CredentialIssuanceResultStatus
+
+  init(
+    id: String,
+    issuer: String,
+    credentialConfigurationId: String,
+    credential: String? = nil,
+    transactionId: String? = nil,
+    cNonce: String? = nil,
+    cNonceExpiresIn: Int? = nil,
+    notificationId: String? = nil,
+    status: CredentialIssuanceResultStatus
+  ) {
+    self.id = id
+    self.issuer = issuer
+    self.credentialConfigurationId = credentialConfigurationId
+    self.credential = credential
+    self.transactionId = transactionId
+    self.cNonce = cNonce
+    self.cNonceExpiresIn = cNonceExpiresIn
+    self.notificationId = notificationId
+    self.status = status
+  }
+}
+
+public enum CredentialIssuanceResultStatus: String, Codable {
+  case pending = "PENDING"
+  case success = "SUCCESS"
+}

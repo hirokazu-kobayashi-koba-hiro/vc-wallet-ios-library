@@ -18,6 +18,7 @@ public enum VerifiableCredentialsError: Error {
   case notAuthenticated(_ description: String? = nil)
   case notFoundJwk(_ description: String? = nil)
   case invalidSdJwt(_ description: String? = nil)
+  case notFoundCredentialIssuanceResult(_ description: String? = nil)
   case networkError
   case systemError(_ description: String? = nil)
   case unknownError
