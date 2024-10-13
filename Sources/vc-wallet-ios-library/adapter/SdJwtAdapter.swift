@@ -1,5 +1,5 @@
 //
-//  SdJwtUtil.swift
+//  SdJwtAdapter.swift
 //  VcWalletLibrary
 //
 //  Created by 小林弘和 on 2024/10/13.
@@ -12,9 +12,9 @@ import SwiftyJSON
 import Tools
 import eudi_lib_sdjwt_swift
 
-public final class SdJwtUtil: Sendable {
+public final class SdJwtAdapter: Sendable {
 
-  public static let shared = SdJwtUtil()
+  public static let shared = SdJwtAdapter()
 
   private init() {}
 

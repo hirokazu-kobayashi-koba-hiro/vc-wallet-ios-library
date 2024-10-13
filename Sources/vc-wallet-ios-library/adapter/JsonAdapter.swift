@@ -1,5 +1,5 @@
 //
-//  JsonUtil.swift
+//  JsonAdapter.swift
 //  VcWalletLibrary
 //
 //  Created by 小林弘和 on 2024/10/08.

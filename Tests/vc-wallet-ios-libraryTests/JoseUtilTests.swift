@@ -35,7 +35,7 @@ final class JoseUtilTests: XCTestCase {
 
     do {
       // When
-      let jws = try JoseUtil.shared.sign(
+      let jws = try JoseAdapter.shared.sign(
         algorithm: "ES256", privateKeyAsJwk: privateKeyValue, headers: ["cty": "JWT"],
         claims: ["sub": "123"])
       print(jws)
@@ -44,7 +44,7 @@ final class JoseUtilTests: XCTestCase {
       XCTAssertNotNil(jws)
       XCTAssertTrue(jws.hasPrefix("eyJ"))
 
-      let verifiedJose = try JoseUtil.shared.verify(
+      let verifiedJose = try JoseAdapter.shared.verify(
         jws: jws, publicKeyAsJwk: publicKeyValue)
       print(verifiedJose)
 

@@ -1,5 +1,5 @@
 //
-//  UrlUtil.swift
+//  UrlAdapter.swift
 //
 //
 //  Created by 小林弘和 on 2024/10/07.

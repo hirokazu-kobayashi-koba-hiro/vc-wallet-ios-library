@@ -65,7 +65,7 @@ final class SdJwtUtilTests: XCTestCase {
         AiV2VpZGVuc3RyYVx1MDBkZmUgMjIifV0~
         """.clean()
 
-      let recreatedClaimsResult = try SdJwtUtil.shared.verifyAndDecode(
+      let recreatedClaimsResult = try SdJwtAdapter.shared.verifyAndDecode(
         sdJwt: complexStructureSDJWTString, jwks: jwks)
 
       print(recreatedClaimsResult)
