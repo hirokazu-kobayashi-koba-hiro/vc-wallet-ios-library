@@ -151,7 +151,7 @@ public class CredentialRequestProofCreator {
     }
 
     //FIXME algorithm
-    let jwt = try JoseUtil.shared.sign(
+    let jwt = try JoseAdapter.shared.sign(
       algorithm: "ES256", privateKeyAsJwk: privateKey, headers: header, claims: payload)
 
     return ["proof_type": "jwt", "proof": jwt]
@@ -284,7 +284,7 @@ public class VerifiableCredentialTransformer {
 
     switch verifiableCredentialsType {
     case .sdJwt:
-      let payload = try SdJwtUtil.shared.verifyAndDecode(sdJwt: rawVc, jwks: jwks)
+      let payload = try SdJwtAdapter.shared.verifyAndDecode(sdJwt: rawVc, jwks: jwks)
       return VerifiableCredentialsRecord(
         id: uuid, issuer: issuer, type: type, format: format, rawVc: rawVc, payload: payload)
     default:

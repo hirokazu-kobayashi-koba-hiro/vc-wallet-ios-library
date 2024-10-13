@@ -1,5 +1,5 @@
 //
-//  JoseUtil.swift
+//  JoseAdapter.swift
 //  vc-wallet-library
 //
 //  Created by 小林弘和 on 2024/09/14.
@@ -9,9 +9,9 @@ import CryptoKit
 import Foundation
 import JOSESwift
 
-public final class JoseUtil: Sendable {
+public final class JoseAdapter: Sendable {
 
-  public static let shared = JoseUtil()
+  public static let shared = JoseAdapter()
 
   public func sign(
     algorithm: String, privateKeyAsJwk: String, headers: [String: Any], claims: [String: Any]
