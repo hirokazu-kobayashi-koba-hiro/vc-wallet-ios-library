@@ -11,9 +11,14 @@ import UIKit
 public final class VerifiableCredentialsApi: @unchecked Sendable {
 
   public static let shared = VerifiableCredentialsApi()
+  private var walletConfiguration: WalletConfiguration?
   private var verifiableCredentialsService: VerifiableCredentialsService?
 
-  public func initialize(verifiableCredentialsService: VerifiableCredentialsService) {
+  public func initialize(
+    walletConfiguration: WalletConfiguration,
+    verifiableCredentialsService: VerifiableCredentialsService
+  ) {
+    self.walletConfiguration = walletConfiguration
     self.verifiableCredentialsService = verifiableCredentialsService
   }
 
@@ -21,7 +26,7 @@ public final class VerifiableCredentialsApi: @unchecked Sendable {
     from: UIViewController, subject: String, url: String,
     interactor: VerifiableCredentialInteractor = DefaultVerifiableCredentialInteractor()
   ) async throws {
-    guard let service = verifiableCredentialsService else {
+    guard let configuration = walletConfiguration, let service = verifiableCredentialsService else {
       throw VerifiableCredentialsError.systemError(
         "VerifiableCredentialsService is not initialized.")
     }
@@ -50,7 +55,37 @@ public final class VerifiableCredentialsApi: @unchecked Sendable {
     let (result, txCode) = await interact(
       from: from, credentialIssuerMetadata: credentialIssuerMetadata,
       credentialOffer: credentialOffer, interactor: interactor)
-    Logger.shared.debug("handlePreAuthorization: \(result) \(txCode)")
+
+    if !result {
+      throw VerifiableCredentialsError.notAuthenticated("user canceled")
+    }
+
+    let tokenResponse = try await service.requestTokenWithPreAuthorizedCode(
+      url: oidcMetadata.tokenEndpoint, clientId: clientConfiguration.clientId,
+      preAuthorizationCode: preAuthorizedCodeGrant.preAuthorizedCode, txCode: txCode)
+
+    let verifiableCredentialsType =
+      try credentialIssuerMetadata.getVerifiableCredentialsType(
+        credentialConfigurationId: credentialOffer.credentialConfigurationIds[0])
+    let vct = credentialIssuerMetadata.findVct(
+      credentialConfigurationId: credentialOffer.credentialConfigurationIds[0])
+
+    let proofCreator = CredentialRequestProofCreator(
+      cNonce: tokenResponse.cNonce, clientId: clientConfiguration.clientId,
+      issuer: oidcMetadata.issuer, privateKey: configuration.privateKey)
+    let proof = try proofCreator.create()
+    let credentialResponse = try await service.requestCredential(
+      url: credentialIssuerMetadata.credentialEndpoint, dpopJwt: nil,
+      accessToken: tokenResponse.accessToken, verifiableCredentialType: verifiableCredentialsType,
+      vct: vct)
+
+    let jwtVcConfiguration = try await service.getJwksConfiguration(
+      jwtVcIssuerEndpoint: credentialOffer.jwtVcIssuerEndpoint())
+    let jwks = try await service.getJwks(jwtVcConfiguration: jwtVcConfiguration)
+
+    if let credential = credentialResponse.credential {
+
+    }
 
   }
 
@@ -60,7 +95,9 @@ public final class VerifiableCredentialsApi: @unchecked Sendable {
     credentialOffer: CredentialOffer,
     interactor: VerifiableCredentialInteractor
   ) async -> (Bool, String?) {
+
     await withCheckedContinuation { continuation in
+
       interactor.confirm(
         viewController: from, credentialIssuerMetadata: credentialIssuerMetadata,
         credentialOffer: credentialOffer

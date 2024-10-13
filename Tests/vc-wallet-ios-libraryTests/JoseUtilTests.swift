@@ -31,6 +31,8 @@ final class JoseUtilTests: XCTestCase {
       return
     }
 
+    print("privateKey: \(privateKeyValue)")
+
     do {
       // When
       let jws = try JoseUtil.shared.sign(

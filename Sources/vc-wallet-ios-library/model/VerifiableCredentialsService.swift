@@ -69,6 +69,89 @@ public class VerifiableCredentialsService {
 
   }
 
+  public func requestTokenWithPreAuthorizedCode(
+    url: String,
+    clientId: String,
+    preAuthorizationCode: String,
+    txCode: String?
+  ) async throws -> TokenResponse {
+
+    var tokenRequest =
+      [
+        "client_id": clientId,
+        "grant_type": "urn:ietf:params:oauth:grant-type:pre-authorized_code",
+        "pre-authorized_code": preAuthorizationCode,
+      ]
+    if let txCodeValue = txCode {
+      tokenRequest["tx_code"] = txCodeValue
+    }
+
+    let tokenRequestHeaders: [String: String] = [
+      "Content-Type": "application/x-www-form-urlencoded"
+    ]
+
+    return try await httpClient.post(
+      url: url, headers: tokenRequestHeaders, body: tokenRequest, responseType: TokenResponse.self)
+  }
+
+  func requestCredential(
+    url: String,
+    dpopJwt: String? = nil,
+    accessToken: String,
+    verifiableCredentialType: VerifiableCredentialsType,
+    vct: String? = nil,
+    proof: [String: Any]? = nil
+  ) async throws -> CredentialResponse {
+
+    var credentialRequest: [String: Any] = [
+      "format": verifiableCredentialType.rawValue,
+      "doctype": verifiableCredentialType.doctype,
+    ]
+
+    if let vct = vct {
+      credentialRequest["vct"] = vct
+    }
+
+    if let proof = proof {
+      credentialRequest["proof"] = proof
+    }
+
+    var credentialRequestHeader: [String: String]
+    if let dpopJwt = dpopJwt {
+      credentialRequestHeader = [
+        "Authorization": "DPoP \(accessToken)",
+        "DPoP": dpopJwt,
+      ]
+    } else {
+      credentialRequestHeader = [
+        "Authorization": "Bearer \(accessToken)"
+      ]
+    }
+
+    credentialRequestHeader["Content-Type"] = "application/json"
+
+    return try await httpClient.post(
+      url: url,
+      headers: credentialRequestHeader,
+      body: credentialRequest,
+      responseType: CredentialResponse.self
+    )
+  }
+
+  public func getJwksConfiguration(jwtVcIssuerEndpoint: String) async throws -> JwtVcConfiguration {
+    return try await httpClient.get(url: jwtVcIssuerEndpoint, responseType: JwtVcConfiguration.self)
+  }
+
+  public func getJwks(jwtVcConfiguration: JwtVcConfiguration) async throws -> String {
+    if let jwks = jwtVcConfiguration.jwks {
+      return jwks
+    }
+    if let jwksUri = jwtVcConfiguration.jwksUri {
+      return try await httpClient.get(url: jwksUri, responseType: String.self)
+    }
+    throw VerifiableCredentialsError.invalidJwtVcConfiguration("found neither jwks nor jwksUri")
+  }
+
   func registerClientConfiguration(oidcMetadata: OidcMetadata) async -> ClientConfiguration {
     do {
       //FIXME dynamic setting

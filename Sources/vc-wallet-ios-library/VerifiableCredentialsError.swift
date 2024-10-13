@@ -12,8 +12,10 @@ public enum VerifiableCredentialsError: Error {
   case invalidCredentialOffer(_ description: String? = nil)
   case invalidCredentialIssuerMetadata(_ description: String? = nil)
   case invalidClientConfiguration(_ description: String? = nil)
+  case invalidJwtVcConfiguration(_ description: String? = nil)
   case unsupportedCredentialFormat(_ description: String? = nil)
   case vcIssuerUnsupportedDynamicClientRegistration(_ description: String? = nil)
+  case notAuthenticated(_ description: String? = nil)
   case networkError
   case systemError(_ description: String? = nil)
   case unknownError
