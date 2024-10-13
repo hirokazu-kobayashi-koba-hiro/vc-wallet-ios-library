@@ -9,6 +9,7 @@ import JSONWebKey
 import JSONWebSignature
 import JSONWebToken
 import SwiftyJSON
+import Tools
 import eudi_lib_sdjwt_swift
 
 public final class SdJwtUtil: Sendable {
@@ -18,9 +19,11 @@ public final class SdJwtUtil: Sendable {
   private init() {}
 
   public func verifyAndDecode(sdJwt: String, jwks: String) throws -> [String: Any] {
-
     let jwks = try JSONDecoder.jwt.decode(JWKSet.self, from: jwks.tryToData())
-    let publickey = try jwks.find(keyID: nil, algorithm: nil)
+    let headers = try extractHeaders(jwsString: sdJwt)
+    let keyID = headers["kid"] as? String
+    let algorithm = headers["alg"] as? String
+    let publickey = try jwks.find(keyID: keyID, algorithm: algorithm)
 
     let _ = try SDJWTVerifier(
       parser: CompactParser(),
@@ -67,4 +70,16 @@ extension JWKSet {
 public enum SDJWTError: Error {
   case notFoundJwk(_ description: String? = nil)
   case invalidSdJwt(_ description: String? = nil)
+}
+
+public func extractHeaders(jwsString: String) throws -> [String: Any] {
+  let components = jwsString.components(separatedBy: ".")
+  guard components.count == 3 else {
+    throw SDJWTError.invalidSdJwt("invalid sd jwt")
+  }
+  let headerDecoded = try Base64URL.decode(components[0])
+  guard let headers = readFromJson(headerDecoded) else {
+    throw SDJWTError.invalidSdJwt("invalid sd jwt")
+  }
+  return headers
 }
