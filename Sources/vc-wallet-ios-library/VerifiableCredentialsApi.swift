@@ -84,6 +84,11 @@ public final class VerifiableCredentialsApi: @unchecked Sendable {
     let jwks = try await service.getJwks(jwtVcConfiguration: jwtVcConfiguration)
 
     if let credential = credentialResponse.credential {
+      let record = try VerifiableCredentialTransformer(
+        issuer: credentialIssuerMetadata.credentialIssuer,
+        verifiableCredentialsType: verifiableCredentialsType,
+        type: credentialOffer.credentialConfigurationIds[0], rawVc: credential, jwks: jwks
+      ).transform()
 
     }
 

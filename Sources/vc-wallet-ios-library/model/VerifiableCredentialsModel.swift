@@ -5,6 +5,8 @@
 //  Created by 小林弘和 on 2024/10/12.
 //
 
+import Foundation
+
 public class CredentialOfferRequestValidator {
   let scheme: String?
   let params: [String: String]
@@ -153,5 +155,71 @@ public class CredentialRequestProofCreator {
       algorithm: "ES256", privateKeyAsJwk: privateKey, headers: header, claims: payload)
 
     return ["proof_type": "jwt", "proof": jwt]
+  }
+}
+
+public class VerifiableCredentialsRecord {
+  let id: String
+  let issuer: String
+  let type: String
+  let format: String
+  let rawVc: String
+  let payload: [String: Any]
+
+  init(
+    id: String, issuer: String, type: String, format: String, rawVc: String, payload: [String: Any]
+  ) {
+    self.id = id
+    self.issuer = issuer
+    self.type = type
+    self.format = format
+    self.rawVc = rawVc
+    self.payload = payload
+  }
+
+  func isSdJwt() -> Bool {
+    return format == "vc+sd-jwt"
+  }
+
+  func isJwt() -> Bool {
+    return format == "jwt_vc_json"
+  }
+
+  func isLdp() -> Bool {
+    return format == "ldp_vc"
+  }
+}
+
+public class VerifiableCredentialTransformer {
+  let issuer: String
+  let verifiableCredentialsType: VerifiableCredentialsType
+  let type: String
+  let rawVc: String
+  let jwks: String
+
+  public init(
+    issuer: String, verifiableCredentialsType: VerifiableCredentialsType, type: String,
+    rawVc: String, jwks: String
+  ) {
+    self.issuer = issuer
+    self.verifiableCredentialsType = verifiableCredentialsType
+    self.type = type
+    self.rawVc = rawVc
+    self.jwks = jwks
+  }
+
+  public func transform() throws -> VerifiableCredentialsRecord {
+    let uuid = UUID().uuidString
+    let format = verifiableCredentialsType.rawValue
+
+    switch verifiableCredentialsType {
+    case .sdJwt:
+      let payload = try SdJwtUtil.shared.verifyAndDecode(sdJwt: rawVc, jwks: jwks)
+      return VerifiableCredentialsRecord(
+        id: uuid, issuer: issuer, type: type, format: format, rawVc: rawVc, payload: payload)
+    default:
+      throw VerifiableCredentialsError.unsupportedCredentialFormat(
+        verifiableCredentialsType.rawValue)
+    }
   }
 }

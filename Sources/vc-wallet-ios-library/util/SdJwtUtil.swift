@@ -17,12 +17,12 @@ public final class SdJwtUtil: Sendable {
 
   private init() {}
 
-    public func verifyAndDecode(sdJwt: String, jwks: String) throws -> [String: Any] {
+  public func verifyAndDecode(sdJwt: String, jwks: String) throws -> [String: Any] {
 
     let jwks = try JSONDecoder.jwt.decode(JWKSet.self, from: jwks.tryToData())
     let publickey = try jwks.find(keyID: nil, algorithm: nil)
 
-    let result = try SDJWTVerifier(
+    let _ = try SDJWTVerifier(
       parser: CompactParser(),
       serialisedString: sdJwt
     )
@@ -37,34 +37,34 @@ public final class SdJwtUtil: Sendable {
       .recreateClaims()
 
     Logger.shared.debug("recreatedClaimsResult: \(recreatedClaimsResult)")
-      
-        guard let claims = recreatedClaimsResult.recreatedClaims.dictionaryObject else {
-            throw SDJWTError.invalidSdJwt("claims is nil")
-        }
-        return claims
+
+    guard let claims = recreatedClaimsResult.recreatedClaims.dictionaryObject else {
+      throw SDJWTError.invalidSdJwt("claims is nil")
+    }
+    return claims
   }
 }
 
 extension JWKSet {
-    
-    public func find(keyID: String?, algorithm: String?) throws -> JWK {
-        if let keyId = keyID {
-            return try self.key(withID: keyId)
-        }
-        if let algorithm = algorithm {
-            guard let jwk = self.keys.filter({ $0.algorithm == algorithm }).first else {
-                throw SDJWTError.notFoundJwk("not found jwk \(algorithm)")
-            }
-            return jwk
-        }
-        guard let jwk = self.keys.first else {
-            throw throw SDJWTError.notFoundJwk("not found jwk")
-        }
-        return jwk
+
+  public func find(keyID: String?, algorithm: String?) throws -> JWK {
+    if let keyId = keyID {
+      return try self.key(withID: keyId)
     }
+    if let algorithm = algorithm {
+      guard let jwk = self.keys.filter({ $0.algorithm == algorithm }).first else {
+        throw SDJWTError.notFoundJwk("not found jwk \(algorithm)")
+      }
+      return jwk
+    }
+    guard let jwk = self.keys.first else {
+      throw SDJWTError.notFoundJwk("not found jwk")
+    }
+    return jwk
+  }
 }
 
 public enum SDJWTError: Error {
-    case notFoundJwk(_ description: String? = nil)
-    case invalidSdJwt(_ description: String? = nil)
+  case notFoundJwk(_ description: String? = nil)
+  case invalidSdJwt(_ description: String? = nil)
 }
