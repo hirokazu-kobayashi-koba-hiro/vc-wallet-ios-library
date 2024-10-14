@@ -25,7 +25,8 @@ public final class JoseAdapter: Sendable {
       algorithm: algorithm, privateKey: privateKeyAsJwk)
     var header = headers
     header["alg"] = algorithm.rawValue
-    if let unwrappedKid = kid {
+
+    if let unwrappedKid = kid, header["jwk"] == nil {
       header["kid"] = unwrappedKid
     }
     let jwsHeader = try JWSHeader(parameters: header)
@@ -169,6 +170,27 @@ func convertECPublickKey(publickKeyAsJwk: String) throws -> SecKey {
   )
 
   return try SecKey.representing(ecPublicKeyComponents: components)
+}
+
+public func convertEcPublicKey(privateKey: String) throws -> [String: Any] {
+
+  guard let jsonData = privateKey.data(using: .utf8),
+    let jwk = try? JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: String]
+  else {
+
+    throw JoseUtilError.invalidJWKFormat
+  }
+
+  guard let crv = jwk["crv"],
+    let x = jwk["x"],
+    let y = jwk["y"],
+    let xData = Data(base64URLEncoded: x),
+    let yData = Data(base64URLEncoded: y)
+  else {
+    throw JoseUtilError.missingJWKParameters
+  }
+
+  return ["kty": "EC", "crv": crv, "x": x, "y": y]
 }
 
 // Base64 URL decoding (handles padding)

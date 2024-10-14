@@ -139,11 +139,12 @@ public class CredentialRequestProofCreator {
 
   func create() throws -> [String: Any] {
 
-    let header: [String: String] = ["": ""]
+    let publicKey = try convertEcPublicKey(privateKey: privateKey)
+    let header: [String: Any] = ["typ": "openid4vci-proof+jwt", "jwk": publicKey]
     var payload: [String: Any] = [
       "iss": clientId,
       "aud": issuer,
-      "iat": "DateUtil.shared.nowAsEpochSecond()",
+      "iat": nowAsEpochSecond(),
     ]
 
     if let cNonce = cNonce {
@@ -154,7 +155,7 @@ public class CredentialRequestProofCreator {
     let jwt = try JoseAdapter.shared.sign(
       algorithm: "ES256", privateKeyAsJwk: privateKey, headers: header, claims: payload)
 
-    return ["proof_type": "jwt", "proof": jwt]
+    return ["proof_type": "jwt", "jwt": jwt]
   }
 }
 
