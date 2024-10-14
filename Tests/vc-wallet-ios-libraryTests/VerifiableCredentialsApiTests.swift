@@ -34,7 +34,7 @@ final class VerifiableCredentialsApiTests: XCTestCase {
       from: viewController,
       subject: "test",
       url:
-        "openid-credential-offer://?credential_offer_uri=https://trial.authlete.net/api/offer/D1ngCPlwooG7UDFf8Kk5cY3dXd9UeBo3hl-FKNxFt9I"
+        "openid-credential-offer://?credential_offer_uri=https://trial.authlete.net/api/offer/C312-Yuy1wLm-UMZqd2YB0nObWy2JcWiFJWEloMLPzo"
     )
   }
 

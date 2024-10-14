@@ -14,9 +14,10 @@ public final class JoseAdapter: Sendable {
   public static let shared = JoseAdapter()
 
   public func sign(
-    algorithm: String, privateKeyAsJwk: String, headers: [String: Any], claims: [String: Any]
+    privateKeyAsJwk: String, headers: [String: Any], claims: [String: Any]
   ) throws -> String {
-    let algorithm = try toAlgorithm(algorithm: algorithm)
+    let alg = try extractAlgorithm(jwkAsString: privateKeyAsJwk)
+    let algorithm = try toAlgorithm(algorithm: alg)
 
     let claimsAsString = try JSONSerialization.data(withJSONObject: claims, options: [])
     let payload = Payload(claimsAsString)
@@ -193,6 +194,16 @@ public func convertEcPublicKey(privateKey: String) throws -> [String: Any] {
   return ["kty": "EC", "crv": crv, "x": x, "y": y]
 }
 
+public func extractAlgorithm(jwkAsString: String) throws -> String? {
+  guard let jsonData = jwkAsString.data(using: .utf8),
+    let jwk = try? JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: String]
+  else {
+
+    throw JoseUtilError.invalidJWKFormat
+  }
+  return jwk["alg"]
+}
+
 // Base64 URL decoding (handles padding)
 extension Data {
   init?(base64URLEncoded base64URLString: String) {
@@ -236,6 +247,6 @@ func toAlgorithm(algorithm: String?) throws -> SignatureAlgorithm {
   case "ES512":
     return SignatureAlgorithm.ES512
   default:
-    throw JoseUtilError.unsupportedAlgorithm(algorithm ?? "unknown")
+    return SignatureAlgorithm.ES256
   }
 }

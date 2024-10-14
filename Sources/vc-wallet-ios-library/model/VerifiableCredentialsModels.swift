@@ -151,9 +151,8 @@ public class CredentialRequestProofCreator {
       payload["nonce"] = cNonce
     }
 
-    //FIXME algorithm
     let jwt = try JoseAdapter.shared.sign(
-      algorithm: "ES256", privateKeyAsJwk: privateKey, headers: header, claims: payload)
+      privateKeyAsJwk: privateKey, headers: header, claims: payload)
 
     return ["proof_type": "jwt", "jwt": jwt]
   }
