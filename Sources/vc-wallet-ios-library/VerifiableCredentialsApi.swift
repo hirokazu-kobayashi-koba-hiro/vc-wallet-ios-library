@@ -52,13 +52,9 @@ public final class VerifiableCredentialsApi: @unchecked Sendable {
     let clientConfiguration = try await service.getOrRegisterClientConfiguration(
       oidcMetadata: oidcMetadata)
 
-    let (result, txCode) = await interact(
+    let txCode = try await interact(
       from: from, credentialIssuerMetadata: credentialIssuerMetadata,
       credentialOffer: credentialOffer, interactor: interactor)
-
-    if !result {
-      throw VerifiableCredentialsError.notAuthenticated("user canceled")
-    }
 
     let tokenResponse = try await service.requestTokenWithPreAuthorizedCode(
       url: oidcMetadata.tokenEndpoint, clientId: clientConfiguration.clientId,
@@ -77,7 +73,7 @@ public final class VerifiableCredentialsApi: @unchecked Sendable {
     let credentialResponse = try await service.requestCredential(
       url: credentialIssuerMetadata.credentialEndpoint, dpopJwt: nil,
       accessToken: tokenResponse.accessToken, verifiableCredentialType: verifiableCredentialsType,
-      vct: vct)
+      vct: vct, proof: proof)
 
     let jwtVcConfiguration = try await service.getJwksConfiguration(
       jwtVcIssuerEndpoint: credentialOffer.jwtVcIssuerEndpoint())
@@ -105,9 +101,9 @@ public final class VerifiableCredentialsApi: @unchecked Sendable {
     credentialIssuerMetadata: CredentialIssuerMetadata,
     credentialOffer: CredentialOffer,
     interactor: VerifiableCredentialInteractor
-  ) async -> (Bool, String?) {
+  ) async throws -> String? {
 
-    await withCheckedContinuation { continuation in
+    try await withCheckedThrowingContinuation { continuation in
 
       interactor.confirm(
         viewController: from, credentialIssuerMetadata: credentialIssuerMetadata,
@@ -115,9 +111,10 @@ public final class VerifiableCredentialsApi: @unchecked Sendable {
       ) { result, txCode in
 
         if result {
-          continuation.resume(returning: (true, txCode))
+          continuation.resume(returning: txCode)
         } else {
-          continuation.resume(returning: (false, nil))
+          continuation.resume(
+            throwing: VerifiableCredentialsError.notAuthenticated("user canceled"))
         }
       }
     }
