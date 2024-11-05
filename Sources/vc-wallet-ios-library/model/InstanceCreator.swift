@@ -6,15 +6,14 @@
 //
 import Foundation
 
-public func createInstance<T>(className: String, type: T.Type) -> T? {
+public func createInstance<T: NSObject>(className: String, type: T.Type) -> T? {
     
-    if let dynamicClass = NSClassFromString(className) as? NSObject.Type {
-        let instance = dynamicClass.init()
-        return instance as? T
+    guard let dynamicClass = NSClassFromString(className) as? T.Type else {
+        Logger.shared.warn("className: \(className) is not found or not a valid NSObject subclass")
+        return nil
     }
-    
-    Logger.shared.warn("className: \(className) is not found")
-    return nil
+        
+    return dynamicClass.init()
 }
 
 
